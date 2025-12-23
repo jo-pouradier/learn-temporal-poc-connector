@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="main-app" />
+        <module name="connect-app" />
+        <module name="channel-app" />
+        <module name="connector-app" />
+        <module name="shared-model" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="channel-app" options="-parameters" />
+      <module name="connect-app" options="-parameters" />
+      <module name="connector-app" options="-parameters" />
+      <module name="main-app" options="-parameters" />
+      <module name="shared-model" options="-parameters" />
+      <module name="temporal" options="" />
+    </option>
+  </component>
+</project>

@@ -1,0 +1,48 @@
+POST http://localhost:8080/webhook/priceAndStock
+Content-Type: application/json
+Content-Length: 31
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "price": 10,
+  "stock": 0
+}
+
+<> 2025-12-28T185419.202.json
+
+###
+
+POST http://localhost:8080/webhook/priceAndStock
+Content-Type: application/json
+Content-Length: 31
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "price": 10,
+  "stock": 0
+}
+
+<> 2025-12-28T185138.202.json
+
+###
+
+POST http://localhost:8082/priceAndStock
+Content-Type: application/json
+Content-Length: 30
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "price": 0,
+  "stock": 0
+}
+
+<> 2025-12-28T185100.404.json
+
+###
+

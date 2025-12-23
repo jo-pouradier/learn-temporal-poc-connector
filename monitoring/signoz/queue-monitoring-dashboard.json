@@ -1,0 +1,563 @@
+{
+  "description": "Monitors queue sizes, lag, throughput, and request status for temporal-app",
+  "tags": ["queues", "monitoring", "temporal-app"],
+  "title": "Queue Monitoring Dashboard",
+  "version": "v4",
+  "layout": [
+    {"h": 1, "i": "row-overview", "maxH": 1, "minH": 1, "minW": 12, "moved": false, "static": false, "w": 12, "x": 0, "y": 0},
+    {"h": 3, "i": "queue-size-main", "moved": false, "static": false, "w": 4, "x": 0, "y": 1},
+    {"h": 3, "i": "queue-size-price", "moved": false, "static": false, "w": 4, "x": 4, "y": 1},
+    {"h": 3, "i": "queue-size-stock", "moved": false, "static": false, "w": 4, "x": 8, "y": 1},
+    {"h": 1, "i": "row-graphs", "maxH": 1, "minH": 1, "minW": 12, "moved": false, "static": false, "w": 12, "x": 0, "y": 4},
+    {"h": 6, "i": "queue-sizes-graph", "moved": false, "static": false, "w": 6, "x": 0, "y": 5},
+    {"h": 6, "i": "queue-lag-graph", "moved": false, "static": false, "w": 6, "x": 6, "y": 5},
+    {"h": 1, "i": "row-requests", "maxH": 1, "minH": 1, "minW": 12, "moved": false, "static": false, "w": 12, "x": 0, "y": 11},
+    {"h": 6, "i": "requests-count-graph", "moved": false, "static": false, "w": 6, "x": 0, "y": 12},
+    {"h": 6, "i": "throughput-graph", "moved": false, "static": false, "w": 6, "x": 6, "y": 12}
+  ],
+  "panelMap": {
+    "row-overview": {
+      "collapsed": false,
+      "widgets": [
+        {"h": 3, "i": "queue-size-main", "moved": false, "static": false, "w": 4, "x": 0, "y": 1},
+        {"h": 3, "i": "queue-size-price", "moved": false, "static": false, "w": 4, "x": 4, "y": 1},
+        {"h": 3, "i": "queue-size-stock", "moved": false, "static": false, "w": 4, "x": 8, "y": 1}
+      ]
+    },
+    "row-graphs": {
+      "collapsed": false,
+      "widgets": [
+        {"h": 6, "i": "queue-sizes-graph", "moved": false, "static": false, "w": 6, "x": 0, "y": 5},
+        {"h": 6, "i": "queue-lag-graph", "moved": false, "static": false, "w": 6, "x": 6, "y": 5}
+      ]
+    },
+    "row-requests": {
+      "collapsed": false,
+      "widgets": [
+        {"h": 6, "i": "requests-count-graph", "moved": false, "static": false, "w": 6, "x": 0, "y": 12},
+        {"h": 6, "i": "throughput-graph", "moved": false, "static": false, "w": 6, "x": 6, "y": 12}
+      ]
+    }
+  },
+  "variables": {},
+  "widgets": [
+    {
+      "id": "row-overview",
+      "title": "Queue Overview",
+      "description": "",
+      "panelTypes": "row"
+    },
+    {
+      "id": "queue-size-main",
+      "title": "Main Batch Queue Size",
+      "description": "Current size of main-app batch queue",
+      "panelTypes": "value",
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {},
+      "fillSpans": false,
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "yAxisUnit": "short",
+      "query": {
+        "queryType": "builder",
+        "builder": {
+          "queryData": [{
+            "aggregateAttribute": {
+              "dataType": "float64",
+              "id": "queue_size--float64--Gauge--true",
+              "isColumn": true,
+              "isJSON": false,
+              "key": "queue_size",
+              "type": "Gauge"
+            },
+            "aggregateOperator": "latest",
+            "dataSource": "metrics",
+            "disabled": false,
+            "expression": "A",
+            "filters": {
+              "items": [{
+                "id": "filter-queue-main",
+                "key": {
+                  "dataType": "string",
+                  "id": "queue--string--tag--false",
+                  "isColumn": false,
+                  "isJSON": false,
+                  "key": "queue",
+                  "type": "tag"
+                },
+                "op": "=",
+                "value": "main_batch"
+              }],
+              "op": "AND"
+            },
+            "functions": [],
+            "groupBy": [],
+            "having": [],
+            "legend": "",
+            "limit": null,
+            "orderBy": [],
+            "queryName": "A",
+            "reduceTo": "last",
+            "spaceAggregation": "sum",
+            "stepInterval": 60,
+            "timeAggregation": "latest"
+          }],
+          "queryFormulas": []
+        },
+        "promql": [{"disabled": false, "legend": "", "name": "A", "query": ""}],
+        "clickhouse_sql": [{"disabled": false, "legend": "", "name": "A", "query": ""}]
+      },
+      "selectedLogFields": [],
+      "selectedTracesFields": []
+    },
+    {
+      "id": "connector-price-size",
+      "title": "Connector Price Queue",
+      "description": "Current size of connector price queue",
+      "panelTypes": "value",
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {},
+      "fillSpans": false,
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "yAxisUnit": "short",
+      "query": {
+        "queryType": "builder",
+        "builder": {
+          "queryData": [{
+            "aggregateAttribute": {
+              "dataType": "float64",
+              "id": "queue_size--float64--Gauge--true",
+              "isColumn": true,
+              "isJSON": false,
+              "key": "queue_size",
+              "type": "Gauge"
+            },
+            "aggregateOperator": "latest",
+            "dataSource": "metrics",
+            "disabled": false,
+            "expression": "A",
+            "filters": {
+              "items": [{
+                "id": "filter-queue-price",
+                "key": {
+                  "dataType": "string",
+                  "id": "queue--string--tag--false",
+                  "isColumn": false,
+                  "isJSON": false,
+                  "key": "queue",
+                  "type": "tag"
+                },
+                "op": "=",
+                "value": "connector_price"
+              }],
+              "op": "AND"
+            },
+            "functions": [],
+            "groupBy": [],
+            "having": [],
+            "legend": "",
+            "limit": null,
+            "orderBy": [],
+            "queryName": "A",
+            "reduceTo": "last",
+            "spaceAggregation": "sum",
+            "stepInterval": 60,
+            "timeAggregation": "latest"
+          }],
+          "queryFormulas": []
+        },
+        "promql": [{"disabled": false, "legend": "", "name": "A", "query": ""}],
+        "clickhouse_sql": [{"disabled": false, "legend": "", "name": "A", "query": ""}]
+      },
+      "selectedLogFields": [],
+      "selectedTracesFields": []
+    },
+    {
+      "id": "queue-size-stock",
+      "title": "Connector Stock Queue Size",
+      "description": "Current size of connector stock queue",
+      "panelTypes": "value",
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {},
+      "fillSpans": false,
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "yAxisUnit": "short",
+      "query": {
+        "queryType": "builder",
+        "builder": {
+          "queryData": [{
+            "aggregateAttribute": {
+              "dataType": "float64",
+              "id": "queue_size--float64--Gauge--true",
+              "isColumn": true,
+              "isJSON": false,
+              "key": "queue_size",
+              "type": "Gauge"
+            },
+            "aggregateOperator": "latest",
+            "dataSource": "metrics",
+            "disabled": false,
+            "expression": "A",
+            "filters": {
+              "items": [{
+                "id": "filter-queue-stock",
+                "key": {
+                  "dataType": "string",
+                  "id": "queue--string--tag--false",
+                  "isColumn": false,
+                  "isJSON": false,
+                  "key": "queue",
+                  "type": "tag"
+                },
+                "op": "=",
+                "value": "connector_stock"
+              }],
+              "op": "AND"
+            },
+            "functions": [],
+            "groupBy": [],
+            "having": [],
+            "legend": "",
+            "limit": null,
+            "orderBy": [],
+            "queryName": "A",
+            "reduceTo": "last",
+            "spaceAggregation": "sum",
+            "stepInterval": 60,
+            "timeAggregation": "latest"
+          }],
+          "queryFormulas": []
+        },
+        "promql": [{"disabled": false, "legend": "", "name": "A", "query": ""}],
+        "clickhouse_sql": [{"disabled": false, "legend": "", "name": "A", "query": ""}]
+      },
+      "selectedLogFields": [],
+      "selectedTracesFields": []
+    },
+    {
+      "id": "row-graphs",
+      "title": "Queue Metrics",
+      "description": "",
+      "panelTypes": "row"
+    },
+    {
+      "id": "queue-sizes-graph",
+      "title": "Queue Sizes Over Time",
+      "description": "Current number of items in each queue",
+      "panelTypes": "graph",
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {},
+      "fillSpans": false,
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "yAxisUnit": "short",
+      "query": {
+        "queryType": "builder",
+        "builder": {
+          "queryData": [{
+            "aggregateAttribute": {
+              "dataType": "float64",
+              "id": "queue_size--float64--Gauge--true",
+              "isColumn": true,
+              "isJSON": false,
+              "key": "queue_size",
+              "type": "Gauge"
+            },
+            "aggregateOperator": "avg",
+            "dataSource": "metrics",
+            "disabled": false,
+            "expression": "A",
+            "filters": {"items": [], "op": "AND"},
+            "functions": [],
+            "groupBy": [{
+              "dataType": "string",
+              "id": "queue--string--tag--false",
+              "isColumn": false,
+              "isJSON": false,
+              "key": "queue",
+              "type": "tag"
+            }],
+            "having": [],
+            "legend": "{{queue}}",
+            "limit": null,
+            "orderBy": [],
+            "queryName": "A",
+            "reduceTo": "avg",
+            "spaceAggregation": "sum",
+            "stepInterval": 60,
+            "timeAggregation": "avg"
+          }],
+          "queryFormulas": []
+        },
+        "promql": [{"disabled": false, "legend": "", "name": "A", "query": ""}],
+        "clickhouse_sql": [{"disabled": false, "legend": "", "name": "A", "query": ""}]
+      },
+      "selectedLogFields": [],
+      "selectedTracesFields": []
+    },
+    {
+      "id": "queue-lag-graph",
+      "title": "Queue Lag (Seconds)",
+      "description": "Age of oldest item in each queue",
+      "panelTypes": "graph",
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {},
+      "fillSpans": false,
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "yAxisUnit": "s",
+      "query": {
+        "queryType": "builder",
+        "builder": {
+          "queryData": [{
+            "aggregateAttribute": {
+              "dataType": "float64",
+              "id": "queue_lag_seconds--float64--Gauge--true",
+              "isColumn": true,
+              "isJSON": false,
+              "key": "queue_lag_seconds",
+              "type": "Gauge"
+            },
+            "aggregateOperator": "avg",
+            "dataSource": "metrics",
+            "disabled": false,
+            "expression": "A",
+            "filters": {"items": [], "op": "AND"},
+            "functions": [],
+            "groupBy": [{
+              "dataType": "string",
+              "id": "queue--string--tag--false",
+              "isColumn": false,
+              "isJSON": false,
+              "key": "queue",
+              "type": "tag"
+            }],
+            "having": [],
+            "legend": "{{queue}}",
+            "limit": null,
+            "orderBy": [],
+            "queryName": "A",
+            "reduceTo": "avg",
+            "spaceAggregation": "sum",
+            "stepInterval": 60,
+            "timeAggregation": "avg"
+          }],
+          "queryFormulas": []
+        },
+        "promql": [{"disabled": false, "legend": "", "name": "A", "query": ""}],
+        "clickhouse_sql": [{"disabled": false, "legend": "", "name": "A", "query": ""}]
+      },
+      "selectedLogFields": [],
+      "selectedTracesFields": []
+    },
+    {
+      "id": "row-requests",
+      "title": "Request Metrics",
+      "description": "",
+      "panelTypes": "row"
+    },
+    {
+      "id": "requests-count-graph",
+      "title": "Requests by Status",
+      "description": "Count of requests in each status",
+      "panelTypes": "graph",
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {},
+      "fillSpans": false,
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "yAxisUnit": "short",
+      "query": {
+        "queryType": "builder",
+        "builder": {
+          "queryData": [{
+            "aggregateAttribute": {
+              "dataType": "float64",
+              "id": "requests_count--float64--Gauge--true",
+              "isColumn": true,
+              "isJSON": false,
+              "key": "requests_count",
+              "type": "Gauge"
+            },
+            "aggregateOperator": "avg",
+            "dataSource": "metrics",
+            "disabled": false,
+            "expression": "A",
+            "filters": {"items": [], "op": "AND"},
+            "functions": [],
+            "groupBy": [{
+              "dataType": "string",
+              "id": "status--string--tag--false",
+              "isColumn": false,
+              "isJSON": false,
+              "key": "status",
+              "type": "tag"
+            }],
+            "having": [],
+            "legend": "{{status}}",
+            "limit": null,
+            "orderBy": [],
+            "queryName": "A",
+            "reduceTo": "avg",
+            "spaceAggregation": "sum",
+            "stepInterval": 60,
+            "timeAggregation": "avg"
+          }],
+          "queryFormulas": []
+        },
+        "promql": [{"disabled": false, "legend": "", "name": "A", "query": ""}],
+        "clickhouse_sql": [{"disabled": false, "legend": "", "name": "A", "query": ""}]
+      },
+      "selectedLogFields": [],
+      "selectedTracesFields": []
+    },
+    {
+      "id": "throughput-graph",
+      "title": "Queue Throughput (Enqueue/Dequeue Rate)",
+      "description": "Items enqueued and dequeued per second",
+      "panelTypes": "graph",
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {},
+      "fillSpans": false,
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "yAxisUnit": "ops",
+      "query": {
+        "queryType": "builder",
+        "builder": {
+          "queryData": [
+            {
+              "aggregateAttribute": {
+                "dataType": "float64",
+                "id": "queue_enqueue--float64--Sum--true",
+                "isColumn": true,
+                "isJSON": false,
+                "key": "queue_enqueue",
+                "type": "Sum"
+              },
+              "aggregateOperator": "rate",
+              "dataSource": "metrics",
+              "disabled": false,
+              "expression": "A",
+              "filters": {"items": [], "op": "AND"},
+              "functions": [],
+              "groupBy": [{
+                "dataType": "string",
+                "id": "queue--string--tag--false",
+                "isColumn": false,
+                "isJSON": false,
+                "key": "queue",
+                "type": "tag"
+              }],
+              "having": [],
+              "legend": "{{queue}} enqueue",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "A",
+              "reduceTo": "avg",
+              "spaceAggregation": "sum",
+              "stepInterval": 60,
+              "timeAggregation": "rate"
+            },
+            {
+              "aggregateAttribute": {
+                "dataType": "float64",
+                "id": "queue_dequeue--float64--Sum--true",
+                "isColumn": true,
+                "isJSON": false,
+                "key": "queue_dequeue",
+                "type": "Sum"
+              },
+              "aggregateOperator": "rate",
+              "dataSource": "metrics",
+              "disabled": false,
+              "expression": "B",
+              "filters": {"items": [], "op": "AND"},
+              "functions": [],
+              "groupBy": [{
+                "dataType": "string",
+                "id": "queue--string--tag--false",
+                "isColumn": false,
+                "isJSON": false,
+                "key": "queue",
+                "type": "tag"
+              }],
+              "having": [],
+              "legend": "{{queue}} dequeue",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "B",
+              "reduceTo": "avg",
+              "spaceAggregation": "sum",
+              "stepInterval": 60,
+              "timeAggregation": "rate"
+            }
+          ],
+          "queryFormulas": []
+        },
+        "promql": [{"disabled": false, "legend": "", "name": "A", "query": ""}],
+        "clickhouse_sql": [{"disabled": false, "legend": "", "name": "A", "query": ""}]
+      },
+      "selectedLogFields": [],
+      "selectedTracesFields": []
+    }
+  ]
+}

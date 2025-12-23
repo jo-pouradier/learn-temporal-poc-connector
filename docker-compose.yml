@@ -1,0 +1,59 @@
+name: temporal-app-infrastructure
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: temporal-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-temporaldb}
+      POSTGRES_USER: ${POSTGRES_USER:-temporal}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-temporal123}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-temporal}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - temporal-network
+
+  # SigNoz for observability
+  signoz:
+    image: ghcr.io/aetherall/signoz-standalone:latest
+    container_name: signoz-standalone
+    ports:
+      - "8085:8080"    # SigNoz UI
+      - "4317:4317"    # OTLP gRPC
+      - "4318:4318"    # OTLP HTTP
+    environment:
+      # Admin account configuration
+      - OTEL_EXPORTER_OTLP_INSECURE=true
+      - SIGNOZ_ADMIN_EMAIL=admin@signoz.local
+      - SIGNOZ_ADMIN_PASSWORD=Admin@123
+      - SIGNOZ_ADMIN_NAME=Admin
+
+      # Disable telemetry
+      - SIGNOZ_TELEMETRY_ENABLED=false
+    volumes:
+      - signoz_db_clickhouse:/var/lib/clickhouse
+      - signoz_db_application:/var/lib/signoz
+    restart: unless-stopped
+    networks:
+      - temporal-network
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  signoz_db_clickhouse:
+  signoz_db_application:
+
+networks:
+  temporal-network:
+    driver: bridge

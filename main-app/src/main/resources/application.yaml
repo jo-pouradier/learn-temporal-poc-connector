@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: main
+  task:
+    scheduling:
+      pool:
+        size: 5
+  mvc:
+    client:
+      request-factory-type: jdk
+    dispatch-trace-request: false
+
+server:
+  port: ${main.port:8082}
+
+database:
+  url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:temporaldb}
+  username: ${DB_USER:temporal}
+  password: ${DB_PASSWORD:temporal123}
+  schema: main_schema
+
+# Flyway configuration
+spring.flyway:
+  enabled: true
+  locations: classpath:db/migration
+  baseline-on-migrate: true
+  validate-on-migrate: true
+  schemas: main_schema
+  default-schema: main_schema
+
+connector:
+  url: http://localhost:8080
+  callback-url-base: http://localhost:8082/callback
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    tags:
+      application: main-app
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+        process.processing.time: true
+        process.callback.latency: true
+
+# OTel agent handles export via command-line args:
+# -Dotel.service.name=main-app
+# -Dotel.exporter.otlp.endpoint=http://localhost:4317

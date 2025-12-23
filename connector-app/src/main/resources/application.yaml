@@ -1,0 +1,51 @@
+connector:
+  url: http://localhost:8080/webhook/priceAndStock
+  self-callback-url: http://localhost:8080/callback
+  callback-url-base: http://localhost:8082/callback
+  channel-price-url: http://localhost:8081/price
+  channel-stock-url: http://localhost:8081/stock
+  queue-size: 10000
+  queue-processing-interval-ms: 100
+
+database:
+  url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:temporaldb}
+  username: ${DB_USER:temporal}
+  password: ${DB_PASSWORD:temporal123}
+  schema: connector_schema
+
+spring:
+  application:
+    name: connector
+  mvc:
+    client:
+      request-factory-type: jdk
+    dispatch-trace-request: false
+  # Flyway configuration
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: true
+    schemas: connector_schema
+    default-schema: connector_schema
+
+server:
+  port: ${connector.port:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    tags:
+      application: connector-app
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+        process.processing.time: true
+        process.callback.latency: true
+
+# OTel agent handles export via command-line args:
+# -Dotel.service.name=connector-app
+# -Dotel.exporter.otlp.endpoint=http://localhost:4317

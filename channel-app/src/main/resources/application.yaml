@@ -1,0 +1,10 @@
+channel:
+  connector-callback-url: http://localhost:8080/callback
+  price-validation-max: 100000
+  stock-validation-max: 10000
+
+spring:
+  application:
+    name: channel
+server:
+  port: ${channel.port:8081}

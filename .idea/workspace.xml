@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ba4cc3ea-c7af-4124-84b5-2782495922dc" name="Changes" comment="feat(db): use jooq gen classes">
+      <change afterPath="$PROJECT_DIR$/.idea/ShortcutLearner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/CaosDef_Std_Lib.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/connector-app/src/main/java/com/example/temporal/config/ConnectorProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/connector-app/src/main/java/com/example/temporal/config/ConnectorProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/connector-app/src/main/java/com/example/temporal/controller/WebhookController.java" beforeDir="false" afterPath="$PROJECT_DIR$/connector-app/src/main/java/com/example/temporal/controller/WebhookController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/connector-app/src/main/java/com/example/temporal/repository/ConnectorStateRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/connector-app/src/main/java/com/example/temporal/repository/ConnectorStateRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/connector-app/src/main/java/com/example/temporal/service/RequestService.java" beforeDir="false" afterPath="$PROJECT_DIR$/connector-app/src/main/java/com/example/temporal/service/RequestService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/connector-app/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/connector-app/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main-app/src/main/java/com/example/main/controller/MainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/main-app/src/main/java/com/example/main/controller/MainController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main-app/src/main/java/com/example/main/repository/MainStateRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/main-app/src/main/java/com/example/main/repository/MainStateRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main-app/src/main/java/com/example/main/service/RequestService.java" beforeDir="false" afterPath="$PROJECT_DIR$/main-app/src/main/java/com/example/main/service/RequestService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monitoring/signoz/queue-monitoring-dashboard.json" beforeDir="false" afterPath="$PROJECT_DIR$/monitoring/signoz/queue-monitoring-dashboard.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/opencode.jsonc" beforeDir="false" afterPath="$PROJECT_DIR$/opencode.jsonc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web-app/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/web-app/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web-app/components/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/web-app/components/Dashboard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web-app/components/DataTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/web-app/components/DataTable.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web-app/components/StatusTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/web-app/components/StatusTable.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web-app/lib/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/web-app/lib/api.ts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="78" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" url="file:///opt/homebrew/opt/go/libexec" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "jo-pouradier"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "git@github.com:jo-pouradier/temporal-app.git",
+    "accountId": "43d9fe81-e734-4abd-b3c6-18be079908ca"
+  }
+}]]></component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="jar://$MAVEN_REPOSITORY$/io/opentelemetry/opentelemetry-api/1.49.0/opentelemetry-api-1.49.0-sources.jar!/io/opentelemetry/api/metrics/DoubleGaugeBuilder.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$MAVEN_REPOSITORY$/io/opentelemetry/opentelemetry-api/1.49.0/opentelemetry-api-1.49.0-sources.jar!/io/opentelemetry/api/trace/Span.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$USER_HOME$/.sdkman/candidates/java/25-zulu/zulu-25.jdk/Contents/Home/lib/src.zip!/java.base/java/util/Queue.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$USER_HOME$/.sdkman/candidates/java/25-zulu/zulu-25.jdk/Contents/Home/lib/src.zip!/java.base/java/util/jar/Attributes.java" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="HttpClientOnboardingState">{
+  &quot;isOnboardingCommentShown&quot;: true
+}</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="37GYuy85BgHbJ4acyIFVFwzEDi8" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultGoTemplateProperty": "Go File",
+    "Docker.docker-compose.yml.clickhouse: Compose Deployment.executor": "Run",
+    "Docker.docker-compose.yml.signoz: Compose Deployment.executor": "Run",
+    "Docker.docker-compose.yml.zookeeper: Compose Deployment.executor": "Run",
+    "Docker.docker-compose.yml: Compose Deployment.executor": "Run",
+    "HTTP Request.generated-requests | #2.executor": "Run",
+    "HTTP Request.generated-requests | #3.executor": "Run",
+    "Maven.connect-app [clean].executor": "Run",
+    "Maven.connect-app [compile].executor": "Run",
+    "Maven.connect-app [install].executor": "Run",
+    "Maven.connect-app [org.apache.maven.plugins:maven-dependency-plugin:3.8.1:copy].executor": "Run",
+    "Maven.connect-app [package].executor": "Run",
+    "Maven.connector-app [clean].executor": "Run",
+    "Maven.connector-app [install].executor": "Run",
+    "Maven.connector-app [package].executor": "Run",
+    "Maven.temporal [clean,package].executor": "Run",
+    "Maven.temporal [clean].executor": "Run",
+    "Maven.temporal [install].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "SHELLCHECK.PATH": "/Users/joseph.pouradier-duteil/Library/Application Support/JetBrains/IntelliJIdea2025.3/plugins/Shell Script/shellcheck",
+    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
+    "Spring Boot.ChannelApplication.executor": "Run",
+    "Spring Boot.ConnectApplication.executor": "Run",
+    "Spring Boot.TemporalApplication.executor": "Run",
+    "com.github.patou.gitmoji.migration-offered": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "go.sdk.automatically.set": "true",
+    "javascript.preferred.runtime.type.id": "node",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/jo-pouradier/.volta/bin/node",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_interpreter_path": "/home/jo-pouradier/.volta/bin/node",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "run.configurations.included.in.services": "true",
+    "settings.editor.selected.configurable": "settings.javascript.runtime",
+    "to.speed.mode.migration.done": "true",
+    "ts.external.directory.path": "/home/jo-pouradier/Desktop/workspace/temporal-app/web-app/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/connect-app/target" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/docker" />
+      <recent name="$PROJECT_DIR$/connect/core" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="configurationStatuses">
+      <map>
+        <entry key="HttpClient.HttpRequestRunConfigurationType">
+          <value>
+            <map>
+              <entry key="generated-requests | #2" value="STOPPED" />
+              <entry key="generated-requests | #3" value="STOPPED" />
+            </map>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="RunManager" selected="Spring Boot.ConnectApplication">
+    <configuration name="generated-requests | #2" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" executionIdentifier="#2" index="2" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="generated-requests | #3" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" executionIdentifier="#3" index="3" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="ChannelApplication (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="channel-app" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.temporal.ChannelApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ChannelApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="channel-app" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.channel.ChannelApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.example.channel.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ConnectApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <envs>
+        <env name="OTEL_EXPORTER_OTLP_ENDPOINT" value="http://localhost:4317" />
+        <env name="OTEL_LOGS_EXPORTER" value="otlp" />
+        <env name="OTEL_METRICS_EXPORTER" value="otlp" />
+        <env name="OTEL_RESSOUCE_ATTRIBUTES" value="service.name=connect-app" />
+        <env name="OTEL_TRACES_EXPORTER" value="otlp" />
+        <env name="OTEL_BSP_SCHEDULE_DELAY" value="2000" />
+      </envs>
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="connect-app" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.connect.ConnectApplication" />
+      <option name="VM_PARAMETERS" value="-javaagent:$PROJECT_DIR$/connect-app/target/opentelemetry-javaagent.jar -Dotel.exporter.otlp.protocol=grpc" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TemporalApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <envs>
+        <env name="OTEL_EXPORTER_OTLP_ENDPOINT" value="http://localhost:4317" />
+        <env name="OTEL_LOGS_EXPORTER" value="otlp" />
+        <env name="OTEL_METRICS_EXPORTER" value="otlp" />
+        <env name="OTEL_RESSOUCE_ATTRIBUTES" value="service.name=connector-app" />
+        <env name="OTEL_TRACES_EXPORTER" value="otlp" />
+        <env name="OTEL_BSP_SCHEDULE_DELAY" value="2000" />
+      </envs>
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="connector-app" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.temporal.TemporalApplication" />
+      <option name="VM_PARAMETERS" value="-javaagent:$PROJECT_DIR$/connect-app/target/opentelemetry-javaagent.jar -Dotel.exporter.otlp.protocol=grpc" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration name="docker-compose.yml: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Colima">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="sourceFilePath" value="docker-compose.yml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration name="docker-compose.yml.signoz: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Colima">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="services">
+            <list>
+              <option value="signoz" />
+            </list>
+          </option>
+          <option name="sourceFilePath" value="docker-compose.yml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Docker.docker-compose.yml.signoz: Compose Deployment" />
+      <item itemvalue="Docker.docker-compose.yml: Compose Deployment" />
+      <item itemvalue="HTTP Request.generated-requests | #2" />
+      <item itemvalue="HTTP Request.generated-requests | #3" />
+      <item itemvalue="Spring Boot.ChannelApplication (1)" />
+      <item itemvalue="Spring Boot.ChannelApplication" />
+      <item itemvalue="Spring Boot.ConnectApplication" />
+      <item itemvalue="Spring Boot.TemporalApplication" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="HTTP Request.generated-requests | #2" />
+        <item itemvalue="HTTP Request.generated-requests | #3" />
+        <item itemvalue="Docker.docker-compose.yml: Compose Deployment" />
+        <item itemvalue="Docker.docker-compose.yml.signoz: Compose Deployment" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ba4cc3ea-c7af-4124-84b5-2782495922dc" name="Changes" comment="" />
+      <created>1766531101497</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1766531101497</updated>
+      <workItem from="1766531102542" duration="5000" />
+      <workItem from="1766568795215" duration="526000" />
+      <workItem from="1766588117739" duration="2753000" />
+      <workItem from="1766785507068" duration="53000" />
+      <workItem from="1766787125359" duration="634000" />
+      <workItem from="1766843708544" duration="129000" />
+      <workItem from="1766867540026" duration="4792000" />
+      <workItem from="1766873152848" duration="447000" />
+      <workItem from="1766873792568" duration="26229000" />
+      <workItem from="1767365705320" duration="2093000" />
+      <workItem from="1767396145192" duration="518000" />
+      <workItem from="1767396666923" duration="45000" />
+      <workItem from="1767396714428" duration="13000" />
+      <workItem from="1767396733494" duration="26279000" />
+      <workItem from="1767732045812" duration="8224000" />
+      <workItem from="1769259759511" duration="12215000" />
+    </task>
+    <task id="LOCAL-00001" summary="refactor connect">
+      <option name="closed" value="true" />
+      <created>1766590152685</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1766590152685</updated>
+    </task>
+    <task id="LOCAL-00002" summary="signoz monitoring">
+      <option name="closed" value="true" />
+      <created>1766945516440</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1766945516440</updated>
+    </task>
+    <task id="LOCAL-00003" summary="custom metric to follow pending processes">
+      <option name="closed" value="true" />
+      <created>1767450315797</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1767450315797</updated>
+    </task>
+    <task id="LOCAL-00004" summary="fix: wrong correlationId">
+      <option name="closed" value="true" />
+      <created>1767450626094</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1767450626094</updated>
+    </task>
+    <task id="LOCAL-00005" summary="fix: wrong correlationId">
+      <option name="closed" value="true" />
+      <created>1767451117272</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1767451117272</updated>
+    </task>
+    <task id="LOCAL-00006" summary="fix: rm useless code">
+      <option name="closed" value="true" />
+      <created>1767451624329</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1767451624329</updated>
+    </task>
+    <task id="LOCAL-00007" summary="fix: queueing">
+      <option name="closed" value="true" />
+      <created>1767452515198</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1767452515198</updated>
+    </task>
+    <task id="LOCAL-00008" summary="fix: queueing">
+      <option name="closed" value="true" />
+      <created>1767453128154</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1767453128154</updated>
+    </task>
+    <task id="LOCAL-00009" summary="fix: channel">
+      <option name="closed" value="true" />
+      <created>1767454144401</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1767454144401</updated>
+    </task>
+    <task id="LOCAL-00010" summary="log: connector callbacks">
+      <option name="closed" value="true" />
+      <created>1767454325168</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1767454325168</updated>
+    </task>
+    <task id="LOCAL-00011" summary="docs">
+      <option name="closed" value="true" />
+      <created>1767455560284</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1767455560284</updated>
+    </task>
+    <task id="LOCAL-00012" summary="feat: exception handler">
+      <option name="closed" value="true" />
+      <created>1767456934182</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1767456934182</updated>
+    </task>
+    <task id="LOCAL-00013" summary="refactor: simplify&#10;&#10;1. Services return data, controllers return ResponseEntity&#10;  2. Exceptions for errors - GlobalExceptionHandler catches them&#10;  3. Try-catch only in @Scheduled/@Async - exception handler doesn't help there&#10;  4. Records for simple data holders&#10;  5. Switch expressions for cleaner branching">
+      <option name="closed" value="true" />
+      <created>1767458844039</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1767458844039</updated>
+    </task>
+    <task id="LOCAL-00014" summary="fix: better scripts for e2e">
+      <option name="closed" value="true" />
+      <created>1767459346813</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1767459346813</updated>
+    </task>
+    <task id="LOCAL-00015" summary="todo">
+      <option name="closed" value="true" />
+      <created>1767460105332</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1767460105332</updated>
+    </task>
+    <task id="LOCAL-00016" summary="refactor: use business id (orderId) instead of correlation">
+      <option name="closed" value="true" />
+      <created>1767517308655</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1767517308655</updated>
+    </task>
+    <task id="LOCAL-00017" summary="refactor(connector): use business id (orderId) instead of correlation">
+      <option name="closed" value="true" />
+      <created>1767517472998</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1767517472998</updated>
+    </task>
+    <task id="LOCAL-00018" summary="refactor(channel): use business id (orderId) instead of correlation">
+      <option name="closed" value="true" />
+      <created>1767517617681</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1767517617682</updated>
+    </task>
+    <task id="LOCAL-00019" summary="refactor: doc">
+      <option name="closed" value="true" />
+      <created>1767518230627</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1767518230627</updated>
+    </task>
+    <task id="LOCAL-00020" summary="fix: error handling">
+      <option name="closed" value="true" />
+      <created>1767518251041</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1767518251041</updated>
+    </task>
+    <task id="LOCAL-00021" summary="refactor(connector): use business id (orderId) instead of correlation">
+      <option name="closed" value="true" />
+      <created>1767518895158</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1767518895158</updated>
+    </task>
+    <task id="LOCAL-00022" summary="refactor(channel): use business id (orderId) instead of correlation">
+      <option name="closed" value="true" />
+      <created>1767519549847</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1767519549847</updated>
+    </task>
+    <task id="LOCAL-00023" summary="feat: better monitoring">
+      <option name="closed" value="true" />
+      <created>1767521113651</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1767521113651</updated>
+    </task>
+    <task id="LOCAL-00024" summary="feat(db): use postgres">
+      <option name="closed" value="true" />
+      <created>1769261601835</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1769261601835</updated>
+    </task>
+    <task id="LOCAL-00025" summary="feat(db): use jooq gen classes">
+      <option name="closed" value="true" />
+      <created>1769263307017</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1769263307017</updated>
+    </task>
+    <task id="LOCAL-00026" summary="feat(db): use jooq gen classes">
+      <option name="closed" value="true" />
+      <created>1769263334428</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1769263334428</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="refactor connect" />
+    <MESSAGE value="signoz monitoring" />
+    <MESSAGE value="custom metric to follow pending processes" />
+    <MESSAGE value="fix: wrong correlationId" />
+    <MESSAGE value="fix: rm useless code" />
+    <MESSAGE value="fix: queueing" />
+    <MESSAGE value="fix: channel" />
+    <MESSAGE value="log: connector callbacks" />
+    <MESSAGE value="docs" />
+    <MESSAGE value="feat: exception handler" />
+    <MESSAGE value="refactor: simplify&#10;&#10;1. Services return data, controllers return ResponseEntity&#10;  2. Exceptions for errors - GlobalExceptionHandler catches them&#10;  3. Try-catch only in @Scheduled/@Async - exception handler doesn't help there&#10;  4. Records for simple data holders&#10;  5. Switch expressions for cleaner branching" />
+    <MESSAGE value="fix: better scripts for e2e" />
+    <MESSAGE value="todo" />
+    <MESSAGE value="refactor: use business id (orderId) instead of correlation" />
+    <MESSAGE value="refactor: doc" />
+    <MESSAGE value="fix: error handling" />
+    <MESSAGE value="refactor(connector): use business id (orderId) instead of correlation" />
+    <MESSAGE value="refactor(channel): use business id (orderId) instead of correlation" />
+    <MESSAGE value="feat: better monitoring" />
+    <MESSAGE value="feat(db): use postgres" />
+    <MESSAGE value="feat(db): use jooq gen classes" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(db): use jooq gen classes" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/connect-app/src/main/java/com/example/connect/service/RequestService.java</url>
+          <line>47</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>
