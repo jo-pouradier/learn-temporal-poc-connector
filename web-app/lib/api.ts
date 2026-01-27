@@ -333,16 +333,34 @@ export async function fetchAllDashboardData(params: PaginationParams = {}): Prom
 
 // Connector config types and functions
 export interface QueueIntervalConfig {
-  intervalMs: number;
-  schedulerRunning: boolean;
-  priceQueueActive: boolean;
-  stockQueueActive: boolean;
+  interval: string; // ISO-8601 duration format (e.g., "PT0.5S" for 500ms)
 }
 
 export interface SetIntervalResponse {
-  previousIntervalMs: number;
-  newIntervalMs: number;
+  previousInterval: string; // ISO-8601 duration format
+  newInterval: string; // ISO-8601 duration format
   message: string;
+}
+
+// Utility functions for duration conversion
+export function durationToMs(duration: string): number {
+  // Parse ISO-8601 duration format (PT0.5S) to milliseconds
+  const match = duration.match(/PT(\d+\.?\d*)S/);
+  if (match) {
+    return parseFloat(match[1]) * 1000;
+  }
+  // Handle other formats if needed
+  const msMatch = duration.match(/PT(\d+)M?S?/);
+  if (msMatch) {
+    return parseInt(msMatch[1], 10);
+  }
+  return 0;
+}
+
+export function msToDuration(ms: number): string {
+  // Convert milliseconds to ISO-8601 duration format
+  const seconds = ms / 1000;
+  return `PT${seconds}S`;
 }
 
 export async function getQueueInterval(): Promise<QueueIntervalConfig> {
@@ -357,8 +375,14 @@ export async function getQueueInterval(): Promise<QueueIntervalConfig> {
   return await response.json();
 }
 
-export async function setQueueInterval(ms: number): Promise<SetIntervalResponse> {
-  const response = await fetch(`${API_CONNECTOR}/config/queue-interval?ms=${ms}`, {
+export async function setQueueInterval(ms: number, scheduleId?: string): Promise<SetIntervalResponse> {
+  const duration = msToDuration(ms);
+  const params = new URLSearchParams({ interval: duration });
+  if (scheduleId) {
+    params.append('scheduleId', scheduleId);
+  }
+  
+  const response = await fetch(`${API_CONNECTOR}/config/queue-interval?${params.toString()}`, {
     method: 'POST',
   });
   

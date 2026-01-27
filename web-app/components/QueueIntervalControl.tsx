@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Timer, Check } from 'lucide-react';
-import { getQueueInterval, setQueueInterval, type QueueIntervalConfig } from '@/lib/api';
+import { getQueueInterval, setQueueInterval, durationToMs, type QueueIntervalConfig } from '@/lib/api';
 
 interface QueueIntervalControlProps {
   onIntervalChange?: (intervalMs: number) => void;
@@ -21,7 +21,9 @@ export function QueueIntervalControl({ onIntervalChange }: QueueIntervalControlP
     try {
       const data = await getQueueInterval();
       setConfig(data);
-      setInputValue(data.intervalMs.toString());
+      // Convert duration string to milliseconds for display
+      const ms = durationToMs(data.interval);
+      setInputValue(ms.toString());
     } catch (err) {
       console.error('Failed to fetch queue interval:', err);
     }
@@ -64,12 +66,12 @@ export function QueueIntervalControl({ onIntervalChange }: QueueIntervalControlP
     }
   };
 
-  const hasChanged = config && inputValue !== config.intervalMs.toString();
+  const hasChanged = config && inputValue !== durationToMs(config.interval).toString();
 
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2 px-3 py-2 rounded-lg border bg-card">
-        <Timer className={`h-4 w-4 ${config?.schedulerRunning ? 'text-green-500' : 'text-muted-foreground'}`} />
+        <Timer className="h-4 w-4 text-green-500" />
         
         <span className="text-xs text-muted-foreground whitespace-nowrap">Dequeue:</span>
         
@@ -100,7 +102,7 @@ export function QueueIntervalControl({ onIntervalChange }: QueueIntervalControlP
         
         {!hasChanged && config && (
           <span className="text-xs text-green-600">
-            {config.priceQueueActive && config.stockQueueActive ? 'Active' : 'Inactive'}
+            Active
           </span>
         )}
       </div>

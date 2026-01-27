@@ -7,12 +7,14 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="main-app" />
-        <module name="connect-app" />
         <module name="channel-app" />
         <module name="connector-app" />
         <module name="shared-model" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="connect-app" target="25" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

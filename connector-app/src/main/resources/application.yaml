@@ -5,7 +5,8 @@ connector:
   channel-price-url: http://localhost:8081/price
   channel-stock-url: http://localhost:8081/stock
   queue-size: 10000
-  queue-processing-interval-ms: 100
+  queue-processing-interval: 5s
+  batch-size: 10
 
 database:
   url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:temporaldb}
@@ -14,6 +15,13 @@ database:
   schema: connector_schema
 
 spring:
+  temporal:
+    connection:
+      target: localhost:7233
+    namespace: default
+    workers-auto-discovery:
+      packages:
+        - com.example.temporal.temporal.workflow
   application:
     name: connector
   mvc:

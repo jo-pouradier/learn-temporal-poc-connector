@@ -232,32 +232,6 @@ public class RequestService {
     }
 
     /**
-     * Process price queue batch.
-     * Called by QueueProcessorScheduler at configurable interval.
-     */
-    public void processPriceQueue() {
-        int queueSize = priceQueueRepository.size();
-        LOG.debug("processPriceQueue invoked: priceQueue.size={}", queueSize);
-        if (queueSize == 0) {
-            return;
-        }
-
-        List<PriceJob> batch = priceQueueRepository.dequeue(10);
-        
-        LOG.info("Processing Price Batch of size {}", batch.size());
-        
-        // Record dequeue metrics
-        queueMetrics.recordDequeue(PRICE_QUEUE, batch.size());
-
-        for (PriceJob job : batch) {
-            LOG.info("Sending price to channel: orderId={}, correlationId={}, price={}", 
-                    job.orderId(), job.correlationId(), job.price());
-            processJob(job.orderId(), job.correlationId(), "price", properties.getChannelPriceUrl(), new PriceRequest(job.orderId(), job.price()));
-        }
-        LOG.info("Price batch processed: processed={}", batch.size());
-    }
-
-    /**
      * Process stock queue batch.
      * Called by QueueProcessorScheduler at configurable interval.
      */
@@ -307,7 +281,7 @@ public class RequestService {
         }
     }
 
-    private void processJob(String orderId, String correlationId, String type, String url, Object body) {
+    public void processJob(String orderId, String correlationId, String type, String url, Object body) {
         RequestState state = stateRepository.findByOrderId(orderId).orElse(null);
         String callbackUrl = properties.getSelfCallbackUrl() + "/" + orderId + "?type=" + type;
         

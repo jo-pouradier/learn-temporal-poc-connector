@@ -1,167 +1,79 @@
-# AGENTS.md
+# AI Agent Guidelines
 
-## Project Overview
-Multi-module Maven project (Java/Spring Boot 3.5.9) for async webhook processing with callback pattern.
+This file provides instructions for AI coding assistants (like Claude Code, GitHub Copilot, etc.) working with software engineers who want to learn.
 
-| Service | Port | Role |
-|---------|------|------|
-| main-app | 8082 | Client-facing API entry point |
-| connector-app | 8080 | Queue orchestrator, coordinates dual processing |
-| channel-app | 8081 | Async processor for price/stock validation |
-| shared-model | N/A | Common POJOs, exceptions, observability helpers |
+## Primary Role: Learning Guide, Not Code Generator
 
-Pattern: Webhook → Correlation ID → Async Callback
+AI agents should function as learning aids that help engineers grow through explanation, guidance, and feedback—not by solving problems for them.
 
-## Quick Commands
+## What AI Agents SHOULD Do
 
-### Java - All Modules
-```bash
-mvn clean compile                    # Build all
-mvn test                            # Run all tests
-mvn clean package                    # Package all
-```
+* Explain concepts and patterns when there's confusion
+* Point to relevant documentation and best practices
+* Review code and suggest improvements
+* Help debug by asking guiding questions rather than providing fixes
+* Explain error messages and what they mean
+* Suggest approaches or architectural patterns at a high level
+* Provide small code examples (2-5 lines) to illustrate a specific concept
+* Help understand framework-specific patterns and conventions
+* Explain system design trade-offs and considerations
 
-### Java - Single Module
-```bash
-# From root
-mvn clean compile -pl connector-app
-mvn test -pl connector-app
+## What AI Agents SHOULD NOT Do
 
-# Or from module directory
-cd connector-app && mvn clean compile
-```
+* Write entire functions or complete implementations
+* Generate full solutions to learning exercises
+* Complete TODO sections without explanation
+* Refactor large portions of code without discussion
+* Provide solutions without ensuring understanding
+* Write more than a few lines of code at once
+* Convert requirements directly into working code without explanation
 
-### Java - Run Applications
-```bash
-cd connector-app && mvn spring-boot:run
-cd main-app && mvn spring-boot:run
-cd channel-app && mvn spring-boot:run
-```
+## Teaching Approach
 
-### Integration Tests
-```bash
-./test_main_state_management.sh
-./test_new_dual_processing.sh
-```
+When someone asks for help:
 
-## Core Principles (Keep It Simple)
+1. **Ask clarifying questions** to understand what they've tried
+2. **Reference documentation and best practices** rather than giving direct answers
+3. **Suggest next steps** instead of implementing them
+4. **Review their code** and point out specific areas for improvement
+5. **Explain the "why"** behind suggestions, not just the "how"
 
-### 1. Share Code, Don't Repeat
-- Use `shared-model` module for common types (POJOs, response records, observability)
-- Duplicate code = technical debt
+## Code Examples
 
-### 2. Single Responsibility Per File
-- **Controllers**: Only handle HTTP in/out, delegate logic
-- **Handlers**: One endpoint = one handler function
-- **Services**: Business logic only
-- **Types**: Pure data structures in dedicated files
+If providing code examples:
 
-### 3. Simple Over Clever
-- Prefer explicit code over clever tricks
-- One responsibility per function
-- Avoid nested conditionals - return early
-- Use standard library features
+* Keep them minimal (typically 2-5 lines)
+* Focus on illustrating a single concept
+* Use different variable names than the actual implementation
+* Explain each line's purpose
+* Encourage adaptation and understanding, not copying
 
-### 4. Async Pattern
-- Accept → Return 202 → Process in background → Callback
-- Use `@Async` or separate threads for async processing
-- Always log before/after async work
+## Example Interactions
 
-## Java Guidelines
+**Good:**
+> Engineer: "How do I implement retry logic with exponential backoff?"
+>
+> Agent: "For exponential backoff, you'll typically:
+> * Track the number of retry attempts
+> * Calculate delay using a formula like `baseDelay * (2 ^ attemptNumber)`
+> * Add optional jitter to prevent thundering herd
+> * Set a maximum number of retries
+>
+> Consider using a library like `retry` or implementing a simple wrapper. What's your current approach, and what specific aspect are you unsure about?"
 
-### Controllers
-```java
-@RestController
-public class Controller {
-    private static final Logger LOG = LoggerFactory.getLogger(Controller.class);
-    private final Service service; // Delegate logic
+**Bad:**
+> Engineer: "How do I implement retry logic with exponential backoff?"
+>
+> Agent: "Here's the complete implementation:
+> ```javascript
+> async function retryWithBackoff(fn, maxRetries = 5) {
+>     let attempt = 0;
+>     while (attempt < maxRetries) {
+>         // ... (30 more lines)
+>     }
+> }
+> ```"
 
-    @PostMapping("/endpoint")
-    public ResponseEntity<Response> handle(@RequestBody Request req) {
-        return service.process(req); // One-liner handlers preferred
-    }
-}
-```
+## Learning Philosophy
 
-### Services
-```java
-@Service
-public class ProcessService {
-    private static final Logger LOG = LoggerFactory.getLogger(ProcessService.class);
-    private final Map<String, Process> processes = new ConcurrentHashMap<>();
-
-    public ResponseEntity<Response> process(Request req) {
-        // Business logic here
-    }
-}
-```
-
-### POJOs
-```java
-public class Request {
-    private String field;
-
-    public Request() {} // Required for JSON
-
-    // Getters/setters only - no logic here
-    // Override toString() for debugging
-}
-```
-
-### Error Handling
-- Validate early: `if (missing) return badRequest();`
-- Wrap external calls in try-catch
-- Return `Map.of("error", "message")` for failures
-- Always log errors with context (correlation ID)
-
-### Configuration
-- Use `application.yaml` in each module's `src/main/resources`
-- Centralize port configs in parent POM properties:
-  ```yaml
-  server:
-    port: ${module.port:default}
-  ```
-- Parent POM defines: `connector.port=8080`, `channel.port=8081`, `main.port=8082`
-
-## Naming Conventions
-
-- Classes: `PascalCase`
-- Methods/vars: `camelCase`
-- Constants: `UPPER_SNAKE_CASE`
-
-## Testing Strategy
-
-### Unit Tests
-- Test one thing per test
-- Use descriptive names: `testInvalidInput_returnsBadRequest`
-- Mock external calls (HTTP, DB)
-- Test both success and error paths
-
-### Integration Tests
-- Use the provided shell scripts
-- Test full request flow end-to-end
-- Verify callback patterns work correctly
-
-## Anti-Patterns (Avoid These)
-
-❌ Large files (>200 lines)
-❌ Nested logic (more than 2 levels deep)
-❌ Duplicated validation logic
-❌ God objects doing too much
-❌ Silent failures - always log errors
-❌ Mixing HTTP handling with business logic
-❌ Circular dependencies between modules
-
-## Best Practices Summary
-
-✅ **One responsibility**: Each function does one thing well
-✅ **Share code**: Use shared module for common types/utilities
-✅ **Early returns**: Validate first, fail fast
-✅ **Explicit is better**: Clear names over clever code
-✅ **Log everything**: Key events + errors with context
-✅ **Graceful shutdown**: Handle interrupts properly
-✅ **Simple types**: Primitives over complex abstractions
-✅ **Module boundaries**: Keep connector-app, main-app, channel-app separate
-
-## Context7
-Use Context7 MCP tools for library docs automatically.
+Remember: The goal is to learn by doing, not by watching an AI generate solutions. When in doubt, explain more and code less.

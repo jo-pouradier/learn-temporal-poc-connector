@@ -1,14 +1,17 @@
 package com.example.temporal.controller;
 
-import com.example.shared.exception.ValidationException;
 import com.example.temporal.config.ConnectorProperties;
-import com.example.temporal.service.QueueProcessorScheduler;
+import com.example.temporal.temporal.schedule.ScheduleManager;
+import io.temporal.client.schedules.ScheduleClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.Map;
+
+import static org.apache.logging.log4j.util.Strings.isEmpty;
 
 /**
  * REST controller for runtime configuration changes.
@@ -21,11 +24,13 @@ public class ConfigController {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigController.class);
 
     private final ConnectorProperties properties;
-    private final QueueProcessorScheduler scheduler;
+    private final ScheduleClient scheduleClient;
+    private final ScheduleManager scheduleManager;
 
-    public ConfigController(ConnectorProperties properties, QueueProcessorScheduler scheduler) {
+    public ConfigController(ConnectorProperties properties, ScheduleClient scheduleClient, ScheduleManager scheduleManager) {
         this.properties = properties;
-        this.scheduler = scheduler;
+        this.scheduleClient = scheduleClient;
+        this.scheduleManager = scheduleManager;
     }
 
     /**
@@ -33,34 +38,30 @@ public class ConfigController {
      */
     @GetMapping("/queue-interval")
     public ResponseEntity<Map<String, Object>> getQueueInterval() {
-        var status = scheduler.getStatus();
         return ResponseEntity.ok(Map.of(
-            "intervalMs", properties.getQueueProcessingIntervalMs(),
-            "schedulerRunning", status.running(),
-            "priceQueueActive", status.priceQueueActive(),
-            "stockQueueActive", status.stockQueueActive()
+            "interval", properties.getQueueProcessingInterval()
         ));
     }
 
-    /**
-     * Set queue processing interval at runtime.
-     * @param ms new interval in milliseconds (10-60000)
-     */
     @PostMapping("/queue-interval")
-    public ResponseEntity<Map<String, Object>> setQueueInterval(@RequestParam long ms) {
-        if (ms < 10 || ms > 60000) {
-            throw new ValidationException("Interval must be between 10ms and 60000ms (1 minute)");
+    public ResponseEntity<Map<String, Object>> setQueueInterval(
+            @RequestParam(required = false) String scheduleId,
+            @RequestParam Duration interval
+    ) {
+        Duration oldInterval = properties.getQueueProcessingInterval();
+        properties.setQueueProcessingInterval(interval);
+
+        if (isEmpty(scheduleId)) {
+            scheduleManager.reschedule(ScheduleManager.PRICE_SCHEDULE_ID, interval);
+            scheduleManager.reschedule(ScheduleManager.STOCK_SCHEDULE_ID, interval);
+        } else {
+            scheduleManager.reschedule(scheduleId, interval);
         }
-
-        long oldInterval = properties.getQueueProcessingIntervalMs();
-        properties.setQueueProcessingIntervalMs(ms);
-        scheduler.reschedule();
-
-        LOG.info("Queue processing interval changed: {}ms -> {}ms", oldInterval, ms);
+        LOG.info("Queue processing interval changed: {} -> {}", oldInterval, interval);
 
         return ResponseEntity.ok(Map.of(
-            "previousIntervalMs", oldInterval,
-            "newIntervalMs", ms,
+            "previousInterval", oldInterval,
+            "newInterval", interval,
             "message", "Queue processing interval updated"
         ));
     }
@@ -70,16 +71,9 @@ public class ConfigController {
      */
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllConfig() {
-        var schedulerStatus = scheduler.getStatus();
         return ResponseEntity.ok(Map.of(
-            "queueProcessingIntervalMs", properties.getQueueProcessingIntervalMs(),
-            "queueSize", properties.getQueueSize(),
-            "scheduler", Map.of(
-                "running", schedulerStatus.running(),
-                "intervalMs", schedulerStatus.intervalMs(),
-                "priceQueueActive", schedulerStatus.priceQueueActive(),
-                "stockQueueActive", schedulerStatus.stockQueueActive()
-            )
+            "queueProcessingIntervalMs", properties.getQueueProcessingInterval(),
+            "queueSize", properties.getQueueSize()
         ));
     }
 }
