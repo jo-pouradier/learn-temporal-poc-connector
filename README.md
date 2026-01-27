@@ -490,6 +490,8 @@ Key Observations
 ## TODO
 
 - [x] Change usage of correlationId and OrderId
-- [ ] Add monitoring to follow processes and orders
+- [x] Add monitoring to follow processes and orders
+- [ ] better filtering on UI -> separate main and connector
+- [ ] The main queue is not well registered with background load
 - [ ] Explain clearly the issue with the current workflow
 - [ ] Add temporal implementation

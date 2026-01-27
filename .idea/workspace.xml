@@ -4,29 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ba4cc3ea-c7af-4124-84b5-2782495922dc" name="Changes" comment="feat(db): use jooq gen classes">
-      <change afterPath="$PROJECT_DIR$/.idea/ShortcutLearner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/CaosDef_Std_Lib.xml" afterDir="false" />
+    <list default="true" id="ba4cc3ea-c7af-4124-84b5-2782495922dc" name="Changes" comment="feat: backend pagination and configed by the UI, filters still needs improvements">
+      <change beforePath="$PROJECT_DIR$/.idea/ShortcutLearner.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ShortcutLearner.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/connector-app/src/main/java/com/example/temporal/config/ConnectorProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/connector-app/src/main/java/com/example/temporal/config/ConnectorProperties.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/connector-app/src/main/java/com/example/temporal/controller/WebhookController.java" beforeDir="false" afterPath="$PROJECT_DIR$/connector-app/src/main/java/com/example/temporal/controller/WebhookController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/connector-app/src/main/java/com/example/temporal/repository/ConnectorStateRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/connector-app/src/main/java/com/example/temporal/repository/ConnectorStateRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/connector-app/src/main/java/com/example/temporal/service/RequestService.java" beforeDir="false" afterPath="$PROJECT_DIR$/connector-app/src/main/java/com/example/temporal/service/RequestService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/connector-app/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/connector-app/src/main/resources/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main-app/src/main/java/com/example/main/controller/MainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/main-app/src/main/java/com/example/main/controller/MainController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main-app/src/main/java/com/example/main/repository/MainStateRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/main-app/src/main/java/com/example/main/repository/MainStateRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main-app/src/main/java/com/example/main/service/RequestService.java" beforeDir="false" afterPath="$PROJECT_DIR$/main-app/src/main/java/com/example/main/service/RequestService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monitoring/signoz/queue-monitoring-dashboard.json" beforeDir="false" afterPath="$PROJECT_DIR$/monitoring/signoz/queue-monitoring-dashboard.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/opencode.jsonc" beforeDir="false" afterPath="$PROJECT_DIR$/opencode.jsonc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web-app/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/web-app/app/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web-app/components/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/web-app/components/Dashboard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web-app/components/DataTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/web-app/components/DataTable.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web-app/components/StatusTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/web-app/components/StatusTable.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web-app/lib/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/web-app/lib/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/status.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_main_state_management.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_new_dual_processing.sh" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,7 +119,7 @@
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
     "run.configurations.included.in.services": "true",
-    "settings.editor.selected.configurable": "settings.javascript.runtime",
+    "settings.editor.selected.configurable": "terminal",
     "to.speed.mode.migration.done": "true",
     "ts.external.directory.path": "/home/jo-pouradier/Desktop/workspace/temporal-app/web-app/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
@@ -300,7 +284,7 @@
       <workItem from="1767396714428" duration="13000" />
       <workItem from="1767396733494" duration="26279000" />
       <workItem from="1767732045812" duration="8224000" />
-      <workItem from="1769259759511" duration="12215000" />
+      <workItem from="1769259759511" duration="14291000" />
     </task>
     <task id="LOCAL-00001" summary="refactor connect">
       <option name="closed" value="true" />
@@ -510,7 +494,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769263334428</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="feat: backend pagination and configed by the UI, filters still needs improvements">
+      <option name="closed" value="true" />
+      <created>1769289772598</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1769289772598</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -549,7 +541,8 @@
     <MESSAGE value="feat: better monitoring" />
     <MESSAGE value="feat(db): use postgres" />
     <MESSAGE value="feat(db): use jooq gen classes" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(db): use jooq gen classes" />
+    <MESSAGE value="feat: backend pagination and configed by the UI, filters still needs improvements" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: backend pagination and configed by the UI, filters still needs improvements" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
