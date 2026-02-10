@@ -14,9 +14,8 @@ public class ConnectorProperties {
     private String callbackUrlBase = "http://localhost:8082/callback";
     private String channelPriceUrl = "http://localhost:8081/price";
     private String channelStockUrl = "http://localhost:8081/stock";
-    private int queueSize = 10000;
-    private Duration queueProcessingInterval;
-    private int batchSize = 10;
+    private String channelPriceBatchUrl = "http://localhost:8081/price/batch";
+    private String channelStockBatchUrl = "http://localhost:8081/stock/batch";
 
     public String getUrl() {
         return url;
@@ -58,40 +57,20 @@ public class ConnectorProperties {
         this.channelStockUrl = channelStockUrl;
     }
 
-    public int getQueueSize() {
-        return queueSize;
+    public String getChannelPriceBatchUrl() {
+        return channelPriceBatchUrl;
     }
 
-    public void setQueueSize(int queueSize) {
-        this.queueSize = queueSize;
+    public void setChannelPriceBatchUrl(String channelPriceBatchUrl) {
+        this.channelPriceBatchUrl = channelPriceBatchUrl;
     }
 
-    public Duration getQueueProcessingInterval() {
-        return queueProcessingInterval;
+    public String getChannelStockBatchUrl() {
+        return channelStockBatchUrl;
     }
 
-    /**
-     * Set the queue processing interval in milliseconds.
-     * Called by Spring during property binding and can be called at runtime.
-     */
-    public void setQueueProcessingInterval(Duration queueProcessingInterval) {
-        this.queueProcessingInterval = queueProcessingInterval;
+    public void setChannelStockBatchUrl(String channelStockBatchUrl) {
+        this.channelStockBatchUrl = channelStockBatchUrl;
     }
 
-    public int getBatchSize() {
-        return batchSize;
-    }
-
-    /**
-     * Set the batch size for dequeuing price and stock jobs.
-     * Valid range: 1 to 1000.
-     * @param batchSize the batch size to use
-     * @throws IllegalArgumentException if batchSize is outside valid range
-     */
-    public void setBatchSize(int batchSize) {
-        if (batchSize < 1 || batchSize > 1000) {
-            throw new IllegalArgumentException("Batch size must be between 1 and 1000, got: " + batchSize);
-        }
-        this.batchSize = batchSize;
-    }
 }

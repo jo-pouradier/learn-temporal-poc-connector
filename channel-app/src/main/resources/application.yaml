@@ -2,6 +2,10 @@ channel:
   connector-callback-url: http://localhost:8080/callback
   price-validation-max: 100000
   stock-validation-max: 10000
+  # Rate limiting for stock batch endpoint (0.5 req/s)
+  stock-batch-rate-limit-capacity: 1
+  stock-batch-rate-limit-refill-tokens: 1
+  stock-batch-rate-limit-refill-millis: 2000  # 2000ms = 0.5 req/s
 
 spring:
   application:

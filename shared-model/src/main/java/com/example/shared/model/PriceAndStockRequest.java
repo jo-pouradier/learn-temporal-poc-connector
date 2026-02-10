@@ -1,6 +1,8 @@
 package com.example.shared.model;
 
-public record PriceAndStockRequest(String orderId, int price, int stock) {
+import org.springframework.lang.NonNull;
+
+public record PriceAndStockRequest(@NonNull String orderId, int price, int stock) {
 
     public PriceAndStockRequest() {
         this(null, 0, 0);

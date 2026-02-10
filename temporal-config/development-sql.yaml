@@ -1,0 +1,47 @@
+# Temporal Dynamic Configuration for Development
+# This file allows runtime configuration overrides for Temporal Server
+
+# Frontend Service Configuration
+frontend.enableClientVersionCheck:
+  - value: true
+    constraints: {}
+
+# History Service Configuration  
+history.persistenceMaxQPS:
+  - value: 3000
+    constraints: {}
+
+# Matching Service Configuration
+matching.numTaskqueueReadPartitions:
+  - value: 3
+    constraints: {}
+
+matching.numTaskqueueWritePartitions:
+  - value: 3
+    constraints: {}
+
+# Worker Service Configuration
+worker.replicatorConcurrency:
+  - value: 1000
+    constraints: {}
+
+# System Configuration
+system.enableNamespaceNotActiveAutoForwarding:
+  - value: true
+    constraints: {}
+
+# Visibility Configuration
+system.advancedVisibilityWritingMode:
+  - value: "off"
+    constraints: {}
+
+# Metrics Configuration
+# Enable detailed metrics for better observability in SigNoz
+system.enableGlobalNamespace:
+  - value: true
+    constraints: {}
+
+# Development-specific: More verbose error details
+system.enableDebugMode:
+  - value: true
+    constraints: {}

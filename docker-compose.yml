@@ -37,6 +37,142 @@ services:
     volumes:
       - signoz_db_clickhouse:/var/lib/clickhouse
       - signoz_db_application:/var/lib/signoz
+      - ./signoz-config/prometheus.yml:/opt/signoz/config/prometheus.yml:ro
+    restart: unless-stopped
+    networks:
+      - temporal-network
+
+  # PostgreSQL Database for Temporal Server
+  temporal-postgres:
+    image: postgres:16-alpine
+    container_name: temporal-postgres-db
+    environment:
+      POSTGRES_DB: temporal
+      POSTGRES_USER: temporal
+      POSTGRES_PASSWORD: temporal
+    ports:
+      - "5433:5432"  # Different port to avoid conflict with app's postgres
+    volumes:
+      - temporal_postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - temporal-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U temporal"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Temporal Admin Tools - Database Schema Setup
+  temporal-admin-tools:
+    image: temporalio/admin-tools:latest
+    container_name: temporal-admin-tools
+    restart: on-failure:6
+    depends_on:
+      temporal-postgres:
+        condition: service_healthy
+    environment:
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=temporal
+      - POSTGRES_PWD=temporal
+      - POSTGRES_SEEDS=temporal-postgres-db
+      - SQL_PASSWORD=temporal
+    networks:
+      - temporal-network
+    entrypoint: ["/bin/sh"]
+    command: >
+      -c "
+        echo 'Starting PostgreSQL schema setup...' &&
+        echo 'Waiting for PostgreSQL port to be available...' &&
+        nc -z -w 10 temporal-postgres-db 5432 &&
+        echo 'PostgreSQL port is available' &&
+        echo 'Creating and setting up temporal database...' &&
+        temporal-sql-tool --plugin postgres12 --ep temporal-postgres-db -u temporal -p 5432 --db temporal create &&
+        temporal-sql-tool --plugin postgres12 --ep temporal-postgres-db -u temporal -p 5432 --db temporal setup-schema -v 0.0 &&
+        temporal-sql-tool --plugin postgres12 --ep temporal-postgres-db -u temporal -p 5432 --db temporal update-schema -d /etc/temporal/schema/postgresql/v12/temporal/versioned &&
+        echo 'Creating and setting up visibility database...' &&
+        temporal-sql-tool --plugin postgres12 --ep temporal-postgres-db -u temporal -p 5432 --db temporal_visibility create &&
+        temporal-sql-tool --plugin postgres12 --ep temporal-postgres-db -u temporal -p 5432 --db temporal_visibility setup-schema -v 0.0 &&
+        temporal-sql-tool --plugin postgres12 --ep temporal-postgres-db -u temporal -p 5432 --db temporal_visibility update-schema -d /etc/temporal/schema/postgresql/v12/visibility/versioned &&
+        echo 'PostgreSQL schema setup complete'
+      "
+
+  # Temporal Server with Prometheus metrics export to SigNoz
+  temporal:
+    image: temporalio/server:latest
+    container_name: temporal-server
+    depends_on:
+      temporal-admin-tools:
+        condition: service_completed_successfully
+      signoz:
+        condition: service_started
+    environment:
+      # Database configuration
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=temporal
+      - POSTGRES_PWD=temporal
+      - POSTGRES_SEEDS=temporal-postgres-db
+      
+      # Server configuration
+      - BIND_ON_IP=0.0.0.0
+      - DYNAMIC_CONFIG_FILE_PATH=/etc/temporal/dynamicconfig.yaml
+      
+      # Prometheus metrics endpoint
+      - PROMETHEUS_ENDPOINT=0.0.0.0:9090
+      
+      # OpenTelemetry Tracing Configuration
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://signoz-standalone:4317
+      - OTEL_EXPORTER_OTLP_INSECURE=true
+      - OTEL_SERVICE_NAME=temporal-server
+      - OTEL_RESOURCE_ATTRIBUTES=service.namespace=temporal,deployment.environment=development
+    volumes:
+      - ./temporal-config/dynamicconfig.yaml:/etc/temporal/dynamicconfig.yaml:z
+    ports:
+      - "7233:7233"   # Temporal gRPC
+      - "9090:9090"   # Prometheus metrics endpoint
+    restart: unless-stopped
+    networks:
+      - temporal-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "7233"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+      start_period: 30s
+
+  # OpenTelemetry Collector for scraping Temporal Prometheus metrics
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    depends_on:
+      temporal:
+        condition: service_healthy
+      signoz:
+        condition: service_started
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml:z
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    restart: unless-stopped
+    networks:
+      - temporal-network
+    # Note: healthcheck disabled as otel-collector-contrib image has limited tools
+    # The collector is working if you see "Metrics" logs with data points
+
+  # Temporal UI for workflow visualization and monitoring
+  temporal-ui:
+    image: temporalio/ui:2.31.2
+    container_name: temporal-ui
+    depends_on:
+      temporal:
+        condition: service_started
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=http://localhost:3000,http://localhost:8088
+    ports:
+      - "8088:8080"
     restart: unless-stopped
     networks:
       - temporal-network
@@ -48,6 +184,8 @@ volumes:
     driver: local
   signoz_db_clickhouse:
   signoz_db_application:
+  temporal_postgres_data:
+    driver: local
 
 networks:
   temporal-network:

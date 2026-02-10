@@ -53,24 +53,6 @@ public class ConnectorEventRepository {
             .map(this::toStateEvent);
     }
 
-    /**
-     * Count events for an order
-     */
-    public int countByOrderId(String orderId) {
-        return dsl.selectCount()
-            .from(CONNECTOR_STATE_EVENTS)
-            .where(CONNECTOR_STATE_EVENTS.ORDER_ID.eq(orderId))
-            .fetchOne(0, int.class);
-    }
-
-    /**
-     * Delete all events for an order (cascade delete should handle this)
-     */
-    public void deleteByOrderId(String orderId) {
-        dsl.deleteFrom(CONNECTOR_STATE_EVENTS)
-            .where(CONNECTOR_STATE_EVENTS.ORDER_ID.eq(orderId))
-            .execute();
-    }
 
     /**
      * Delete all events

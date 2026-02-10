@@ -1,40 +1,39 @@
 package com.example.temporal.service;
 
 import com.example.shared.exception.NotFoundException;
-import com.example.shared.exception.ServiceUnavailableException;
 import com.example.shared.exception.ValidationException;
-import com.example.shared.model.CallbackReceivedResponse;
 import com.example.shared.model.CallbackResponse;
 import com.example.shared.model.EventType;
 import com.example.shared.model.OrderStatus;
 import com.example.shared.model.PagedResponse;
 import com.example.shared.model.PriceAndStockRequest;
 import com.example.shared.model.PriceAndStockResponse;
-import com.example.shared.model.PriceRequest;
 import com.example.shared.model.RequestState;
 import com.example.shared.model.StateEvent;
-import com.example.shared.model.StockRequest;
-import com.example.shared.observability.QueueMetrics;
 import com.example.shared.observability.RequestMetrics;
 import com.example.temporal.config.ConnectorProperties;
 import com.example.temporal.repository.ConnectorStateRepository;
 import com.example.temporal.repository.ConnectorEventRepository;
-import com.example.temporal.repository.PriceQueueRepository;
-import com.example.temporal.repository.PriceQueueRepository.PriceJob;
-import com.example.temporal.repository.StockQueueRepository;
-import com.example.temporal.repository.StockQueueRepository.StockJob;
+import com.example.temporal.temporal.utils.WorkflowIdBuilder;
+import com.example.temporal.temporal.workflow.ProcessPriceAndStockWorkflow;
+import com.example.temporal.temporal.worker.ProcessPriceAndStockWorker;
+import io.temporal.api.enums.v1.WorkflowIdConflictPolicy;
+import io.temporal.client.WorkflowClient;
+import io.temporal.client.WorkflowOptions;
+import io.temporal.common.RetryOptions;
+import io.temporal.common.SearchAttributeKey;
+import io.temporal.common.SearchAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
+import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -43,136 +42,91 @@ import java.util.UUID;
 public class RequestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(RequestService.class);
-    
-    // Queue names for metrics
-    private static final String PRICE_QUEUE = "connector_price";
-    private static final String STOCK_QUEUE = "connector_stock";
 
     private final ConnectorProperties properties;
     private final RestClient restClient;
     private final ConnectorStateRepository stateRepository;
     private final ConnectorEventRepository eventRepository;
-    private final PriceQueueRepository priceQueueRepository;
-    private final StockQueueRepository stockQueueRepository;
-    private final QueueMetrics queueMetrics;
     private final RequestMetrics requestMetrics;
+    private final WorkflowClient workflowClient;
 
     public RequestService(ConnectorProperties properties, RestClient.Builder restClientBuilder,
                           ConnectorStateRepository stateRepository, ConnectorEventRepository eventRepository,
-                          PriceQueueRepository priceQueueRepository, StockQueueRepository stockQueueRepository,
-                          QueueMetrics queueMetrics, RequestMetrics requestMetrics) {
+                          RequestMetrics requestMetrics, WorkflowClient workflowClient) {
         this.properties = properties;
         this.restClient = restClientBuilder.build();
         this.stateRepository = stateRepository;
         this.eventRepository = eventRepository;
-        this.priceQueueRepository = priceQueueRepository;
-        this.stockQueueRepository = stockQueueRepository;
-        this.queueMetrics = queueMetrics;
         this.requestMetrics = requestMetrics;
+        this.workflowClient = workflowClient;
     }
 
-    public ResponseEntity<PriceAndStockResponse> processPriceAndStock(PriceAndStockRequest payload, String providedCorrelationId) {
+    public PriceAndStockResponse processPriceAndStock(PriceAndStockRequest payload,@Nullable String providedCorrelationId) {
+        providedCorrelationId = (providedCorrelationId == null || providedCorrelationId.isBlank())
+                ? UUID.randomUUID().toString() : providedCorrelationId;
         String orderId = payload.orderId();
-        if (orderId == null || orderId.isBlank()) {
-            throw new ValidationException("orderId is required");
-        }
 
-        // Check if this order already exists in DB
-        RequestState state = stateRepository.findByOrderId(orderId).orElse(null);
-        String correlationId;
-        
-        if (state == null) {
-            // New order - create new state
-            correlationId = (providedCorrelationId != null && !providedCorrelationId.isBlank())
-                    ? providedCorrelationId : UUID.randomUUID().toString();
-            state = new RequestState(orderId, correlationId, payload);
-            LOG.info("NEW request queuing: orderId={}, correlationId={}, price={}, stock={}",
-                    orderId, correlationId, payload.price(), payload.stock());
-        } else {
-            // Existing order - update and preserve history
-            correlationId = state.getCorrelationId();
-            state.setOriginalRequest(payload);
-            // Reset completion flags for new processing
-            state.setPriceCompleted(false);
-            state.setStockCompleted(false);
-            state.setPriceCallback(null);
-            state.setStockCallback(null);
-            LOG.info("UPDATE request queuing: orderId={}, correlationId={}, NEW price={}, NEW stock={}",
-                    orderId, correlationId, payload.price(), payload.stock());
-        }
-
+        // save in DB
+        String finalProvidedCorrelationId = providedCorrelationId;
+        RequestState state = stateRepository.findByOrderId(orderId)
+                .map(existing -> updateExistingState(payload, existing, finalProvidedCorrelationId))
+                .orElseGet(() -> getCreateNewState(payload, finalProvidedCorrelationId, orderId));
         requestMetrics.recordRequestReceived();
-
         state.setStatus(OrderStatus.QUEUED);
-        
-        // Save state to DB
         stateRepository.save(state);
-        
-        // Save event
-        StateEvent event = new StateEvent(EventType.STATUS_CHANGE, OrderStatus.QUEUED, 
-                "Jobs queued: price=" + payload.price() + ", stock=" + payload.stock());
+
+        StateEvent event = new StateEvent(EventType.STATUS_CHANGE, OrderStatus.QUEUED,
+                "Workflow starting");
         eventRepository.save(orderId, event);
 
-        // Try to enqueue jobs - check queue size limits
-        int currentQueueSize = priceQueueRepository.size() + stockQueueRepository.size();
-        if (currentQueueSize >= properties.getQueueSize() * 2) { // Both queues combined
-            state.setStatus(OrderStatus.FAILED);
-            state.setError("Queue full");
-            stateRepository.save(state);
-            
-            StateEvent errorEvent = new StateEvent(EventType.QUEUE_FULL, OrderStatus.FAILED, "Price or stock queue full");
-            eventRepository.save(orderId, errorEvent);
-            
-            requestMetrics.recordRequestFailed();
-            throw new ServiceUnavailableException("Queue full");
-        }
+        // Start Temporal workflow
+        String workflowId = WorkflowIdBuilder.priceStockWorkflowId(orderId);
+        SearchAttributes correlationIdSearchAttribute = SearchAttributes.newBuilder()
+                .set(SearchAttributeKey.forKeyword("correlationId"), providedCorrelationId)
+                .build();
+        ProcessPriceAndStockWorkflow workflow = workflowClient.newWorkflowStub(
+                ProcessPriceAndStockWorkflow.class,
+                WorkflowOptions.newBuilder()
+                        .setWorkflowId(workflowId)
+                        .setWorkflowIdConflictPolicy(WorkflowIdConflictPolicy.WORKFLOW_ID_CONFLICT_POLICY_TERMINATE_EXISTING) // last event win
+                        .setTaskQueue(ProcessPriceAndStockWorker.QUEUE)
+                        .setRetryOptions(RetryOptions.newBuilder()
+                                .setInitialInterval(Duration.ofSeconds(1))
+                                .setMaximumAttempts(3)
+                                .setBackoffCoefficient(2)
+                                .build())
+                        .setTypedSearchAttributes(
+                                correlationIdSearchAttribute)
+                        .build()
+        );
 
-        priceQueueRepository.enqueue(orderId, correlationId, payload.price());
-        stockQueueRepository.enqueue(orderId, correlationId, payload.stock());
-        
-        // Record enqueue metrics
-        queueMetrics.recordEnqueue(PRICE_QUEUE);
-        queueMetrics.recordEnqueue(STOCK_QUEUE);
-        
-        LOG.info("Jobs queued: orderId={}, correlationId={}, price={}, stock={}",
-                orderId, correlationId, payload.price(), payload.stock());
+        // Start workflow asynchronously
+        WorkflowClient.start(workflow::processPriceAndStock, payload, providedCorrelationId);
 
-        PriceAndStockResponse response = new PriceAndStockResponse(orderId, "queued");
-        return ResponseEntity.accepted()
-                .header("X-Correlation-Id", correlationId)
-                .body(response);
+        LOG.info("Workflow started: orderId={}, workflowId={}, correlationId={}",
+                orderId, workflowId, providedCorrelationId);
+
+        return  new PriceAndStockResponse(orderId, "queued");
     }
 
-    public Map<String, Object> processBatchPriceAndStock(List<PriceAndStockRequest> payload) {
-        int successCount = 0;
-        int failedCount = 0;
-        List<String> failedIds = new ArrayList<>();
+    private static RequestState getCreateNewState(PriceAndStockRequest payload, String providedCorrelationId, String orderId) {
+        LOG.info("NEW request: orderId={}, correlationId={}, price={}, stock={}",
+                orderId, providedCorrelationId, payload.price(), payload.stock());
+        return new RequestState(orderId, providedCorrelationId, payload);
+    }
 
-        for (PriceAndStockRequest request : payload) {
-            try {
-                // Reuse existing single-item logic
-                processPriceAndStock(request, null);
-                successCount++;
-            } catch (Exception e) {
-                LOG.error("Failed to process batch item: orderId={}, error={}", request.orderId(), e.getMessage());
-                failedCount++;
-                if (request.orderId() != null) {
-                    failedIds.add(request.orderId());
-                }
-            }
-        }
-
-        return Map.of(
-            "total", payload.size(),
-            "queued", successCount,
-            "failed", failedCount,
-            "failedIds", failedIds
-        );
+    private static RequestState updateExistingState(PriceAndStockRequest payload, RequestState state, String orderId) {
+        var correlationId = state.getCorrelationId();
+        state.setOriginalRequest(payload);
+        state.resetFlags();
+        LOG.info("UPDATE request: orderId={}, correlationId={}, NEW price={}, NEW stock={}",
+                orderId, correlationId, payload.price(), payload.stock());
+        return state;
     }
 
     public RequestState getStatus(String orderId) {
         return stateRepository.findByOrderId(orderId)
-            .orElseThrow(() -> new NotFoundException("Request not found: " + orderId));
+                .orElseThrow(() -> new NotFoundException("Request not found: " + orderId));
     }
 
     @Transactional
@@ -183,243 +137,80 @@ public class RequestService {
         return PagedResponse.of(states, page, size, totalElements);
     }
 
-    public ResponseEntity<CallbackReceivedResponse> processCallback(String orderId, String type, CallbackResponse callback) {
-        LOG.info("Callback received: orderId={}, type={}, correlationId={}", orderId, type, callback.correlationId());
+    public void processCallback(String orderId, String type, CallbackResponse callback) {
         requestMetrics.recordCallbackReceived();
-
         RequestState state = stateRepository.findByOrderId(orderId)
-            .orElseThrow(() -> new NotFoundException("Request not found: " + orderId));
+                .orElseThrow(() -> new NotFoundException("Request not found: " + orderId));
 
-        switch (type) {
-            case "price" -> {
-                state.setPriceCallback(callback);
-                state.setPriceCompleted(true);
-                stateRepository.save(state);
-                
-                StateEvent event = new StateEvent(EventType.CALLBACK_RECEIVED, OrderStatus.PROCESSING_PRICE, 
-                        "Price callback: isPriceOk=" + callback.isPriceOk());
-                eventRepository.save(orderId, event);
-                
-                LOG.info("Price callback processed: orderId={}, priceCompleted={}, stockCompleted={}", 
-                        orderId, state.isPriceCompleted(), state.isStockCompleted());
-            }
-            case "stock" -> {
-                state.setStockCallback(callback);
-                state.setStockCompleted(true);
-                stateRepository.save(state);
-                
-                StateEvent event = new StateEvent(EventType.CALLBACK_RECEIVED, OrderStatus.PROCESSING_STOCK, 
-                        "Stock callback: isStockOk=" + callback.isStockOk());
-                eventRepository.save(orderId, event);
-                
-                LOG.info("Stock callback processed: orderId={}, priceCompleted={}, stockCompleted={}", 
-                        orderId, state.isPriceCompleted(), state.isStockCompleted());
-            }
+        StateEvent event = switch (type) {
+            case "price" -> state.updatePrice(callback);
+            case "stock" -> state.updateStock(callback);
             default -> throw new ValidationException("Unknown callback type: " + type);
-        }
+        };
+        stateRepository.save(state);
+        eventRepository.save(orderId, event);
+        LOG.info("{} callback processed: orderId={}, priceDone={}, stockDone={}",
+                type, orderId, state.isPriceCompleted(), state.isStockCompleted());
 
-        if (state.isPriceCompleted() && state.isStockCompleted()) {
-            LOG.info("Both callbacks received, combining: orderId={}, correlationId={}", orderId, state.getCorrelationId());
-            combineAndSendFinalCallback(state);
+        // Signal the Temporal workflow
+        String workflowId = WorkflowIdBuilder.priceStockWorkflowId(orderId);
+        ProcessPriceAndStockWorkflow workflow = workflowClient.newWorkflowStub(
+                ProcessPriceAndStockWorkflow.class, workflowId);
+
+        if (type.equals("price")) {
+            workflow.setPriceResponse(callback);
         } else {
-            LOG.info("Waiting for other callback: orderId={}, priceCompleted={}, stockCompleted={}", 
-                    orderId, state.isPriceCompleted(), state.isStockCompleted());
+            workflow.setStockResponse(callback);
         }
 
-        return ResponseEntity.ok()
-                .header("X-Correlation-Id", state.getCorrelationId())
-                .body(new CallbackReceivedResponse("callback_received"));
+        LOG.info("Workflow signaled: workflowId={}, type={}", workflowId, type);
+
     }
 
     /**
-     * Process stock queue batch.
-     * Called by QueueProcessorScheduler at configurable interval.
-     */
-    public void processStockQueue() {
-        int queueSize = stockQueueRepository.size();
-        LOG.debug("processStockQueue invoked: stockQueue.size={}", queueSize);
-        if (queueSize == 0){
-            return;
-        }
-
-        List<StockJob> batch = stockQueueRepository.dequeue(10);
-        
-        LOG.info("Processing Stock Batch of size {}", batch.size());
-        
-        // Record dequeue metrics
-        queueMetrics.recordDequeue(STOCK_QUEUE, batch.size());
-
-        for (StockJob job : batch) {
-            LOG.info("Sending stock to channel: orderId={}, correlationId={}, stock={}", 
-                    job.orderId(), job.correlationId(), job.stock());
-            processJob(job.orderId(), job.correlationId(), "stock", properties.getChannelStockUrl(), new StockRequest(job.orderId(), job.stock()));
-        }
-        LOG.info("Stock batch processed: processed={}", batch.size());
-    }
-
-    /**
-     * Scheduled task to update queue and request state gauge metrics.
+     * Scheduled task to update request state gauge metrics.
      * Runs every 5 seconds to keep gauges up-to-date.
      */
     @Scheduled(fixedRate = 5000)
     public void updateMetricsGauges() {
         try {
-            // Update queue metrics
-            queueMetrics.updateQueueMetrics(PRICE_QUEUE, 
-                    priceQueueRepository::size, 
-                    priceQueueRepository::getOldestQueuedAt);
-            queueMetrics.updateQueueMetrics(STOCK_QUEUE, 
-                    stockQueueRepository::size, 
-                    stockQueueRepository::getOldestQueuedAt);
-            
             // Update request counts by status
             requestMetrics.updateRequestCountsByStatus(stateRepository.countByStatus());
-            
+
             LOG.debug("Metrics gauges updated");
         } catch (Exception e) {
             LOG.warn("Failed to update metrics gauges: {}", e.getMessage());
         }
     }
 
-    public void processJob(String orderId, String correlationId, String type, String url, Object body) {
-        RequestState state = stateRepository.findByOrderId(orderId).orElse(null);
+    public void processJobRequest(String orderId, String correlationId, String type, String url, Object body) {
         String callbackUrl = properties.getSelfCallbackUrl() + "/" + orderId + "?type=" + type;
-        
-        LOG.info("Processing job: orderId={}, correlationId={}, type={}, url={}, callbackUrl={}", 
-                orderId, correlationId, type, url, callbackUrl);
-        
-        try {
-            restClient.post()
-                    .uri(url)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("X-Correlation-Id", correlationId)
-                    .header("X-Callback-Url", callbackUrl)
-                    .body(body)
-                    .retrieve()
-                    .toBodilessEntity();
-
-            if (state != null) {
-                OrderStatus newStatus = type.equals("price") 
-                    ? OrderStatus.PROCESSING_PRICE 
-                    : OrderStatus.PROCESSING_STOCK;
-                state.setStatus(newStatus);
-                stateRepository.save(state);
-                
-                StateEvent event = new StateEvent(EventType.JOB_SENT_TO_CHANNEL, newStatus, 
-                        "Job sent to channel: " + type);
-                eventRepository.save(orderId, event);
-            }
-            LOG.info("Job sent to channel successfully: orderId={}, correlationId={}, type={}", orderId, correlationId, type);
-
-        } catch (Exception e) {
-            LOG.error("Failed {} job: orderId={}, correlationId={}, error={}", type, orderId, correlationId, e.getMessage());
-            if (state != null) {
-                state.setStatus(OrderStatus.FAILED);
-                state.setError(e.getMessage());
-                stateRepository.save(state);
-                
-                StateEvent event = new StateEvent(EventType.ERROR, OrderStatus.FAILED, 
-                        "Failed " + type + " job: " + e.getMessage());
-                eventRepository.save(orderId, event);
-            }
-            sendErrorCallback(state, type, e.getMessage());
-        }
-    }
-
-    private void combineAndSendFinalCallback(RequestState state) {
-        LOG.info("Combining callbacks: orderId={}, correlationId={}, priceCallback={}, stockCallback={}", 
-                state.getOrderId(), state.getCorrelationId(), 
-                state.getPriceCallback() != null, state.getStockCallback() != null);
-        
-        CallbackResponse.Builder builder = CallbackResponse.builder()
-                .correlationId(state.getCorrelationId())
-                .status("completed")
-                .type("combined")
-                .processedAt(LocalDateTime.now());
-
-        if (state.getPriceCallback() != null) {
-            builder.price(state.getPriceCallback().price());
-            builder.priceOk(state.getPriceCallback().isPriceOk());
-        }
-        if (state.getStockCallback() != null) {
-            builder.stock(state.getStockCallback().stock());
-            builder.stockOk(state.getStockCallback().isStockOk());
-        }
-
-        CallbackResponse combined = builder.build();
-        state.setFinalResponse(combined);
-        state.setCompletedAt(LocalDateTime.now());
-        state.setStatus(OrderStatus.COMPLETED);
-        
-        stateRepository.save(state);
-        
-        StateEvent event = new StateEvent(EventType.STATUS_CHANGE, OrderStatus.COMPLETED, 
-                "Both callbacks received and combined");
-        eventRepository.save(state.getOrderId(), event);
-        
-        requestMetrics.recordRequestCompleted();
-
-        // Record end-to-end latency
-        if (state.getSubmittedAt() != null && state.getCompletedAt() != null) {
-            Duration latency = Duration.between(state.getSubmittedAt(), state.getCompletedAt());
-            requestMetrics.recordCallbackLatency(latency);
-        }
-
-        LOG.info("Sending final callback: orderId={}, correlationId={}", state.getOrderId(), state.getCorrelationId());
-        sendCallback(properties.getCallbackUrlBase() + "/" + state.getOrderId(), combined);
-    }
-
-    private void sendErrorCallback(RequestState state, String type, String errorMessage) {
-        if (state == null) return;
-        requestMetrics.recordRequestFailed();
-
-        CallbackResponse errorResponse = CallbackResponse.builder()
-                .correlationId(state.getCorrelationId())
-                .status("error")
-                .type(type)
-                .error(errorMessage)
-                .processedAt(LocalDateTime.now())
-                .build();
-        sendCallback(properties.getCallbackUrlBase() + "/" + state.getOrderId(), errorResponse);
-    }
-
-    private void sendCallback(String url, CallbackResponse response) {
-        try {
-            restClient.post()
-                    .uri(url)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(response)
-                    .retrieve()
-                    .toBodilessEntity();
-            requestMetrics.recordCallbackSent();
-            LOG.info("Callback sent: correlationId={}, status={}", response.correlationId(), response.status());
-        } catch (Exception e) {
-            requestMetrics.recordRequestFailed();
-            LOG.error("Callback failed: correlationId={}, error={}", response.correlationId(), e.getMessage());
-        }
+        restClient.post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("X-Correlation-Id", correlationId)
+                .header("X-Callback-Url", callbackUrl)
+                .body(body)
+                .retrieve()
+                .toBodilessEntity();
     }
 
     public Map<String, Object> clearAllQueues() {
-        LOG.info("Clearing all connector queues and state");
-        
-        int priceQueueCleared = priceQueueRepository.size();
-        int stockQueueCleared = stockQueueRepository.size();
+        LOG.info("Clearing all connector state and events");
+
         int statesCleared = stateRepository.count();
-        
-        priceQueueRepository.clear();
-        stockQueueRepository.clear();
+
+        // Delete all events first
         eventRepository.deleteAll();
-        // Delete all states (cascade will delete events and queue entries)
+
+        // Delete all states (cascade will delete related records)
         stateRepository.findAll().forEach(state -> stateRepository.delete(state.getOrderId()));
-        
+
         String timestamp = LocalDateTime.now().toString();
-        
-        LOG.info("Cleared {} price jobs, {} stock jobs, {} request states at {}", 
-                priceQueueCleared, stockQueueCleared, statesCleared, timestamp);
-        
+
+        LOG.info("Cleared {} request states at {}", statesCleared, timestamp);
+
         return Map.of(
-                "priceQueueCleared", priceQueueCleared,
-                "stockQueueCleared", stockQueueCleared,
                 "statesCleared", statesCleared,
                 "timestamp", timestamp
         );

@@ -1,0 +1,10 @@
+# Temporal Dynamic Configuration
+# This file configures Temporal Server runtime settings
+
+# Enable system-level settings
+system.enableActivityEagerExecution:
+  - value: true
+
+# Frontend service settings
+frontend.enableUpdateWorkflowExecution:
+  - value: true

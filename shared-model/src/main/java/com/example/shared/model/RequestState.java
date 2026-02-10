@@ -37,6 +37,27 @@ public class RequestState {
         addEvent(EventType.REQUEST_RECEIVED, OrderStatus.PENDING, "Request created");
     }
 
+    public void resetFlags() {
+        this.setPriceCompleted(false);
+        this.setStockCompleted(false);
+        this.setPriceCallback(null);
+        this.setStockCallback(null);
+    }
+
+    public StateEvent updatePrice(CallbackResponse callback) {
+        this.setPriceCallback(callback);
+        this.setPriceCompleted(true);
+        return new StateEvent(EventType.CALLBACK_RECEIVED, OrderStatus.PROCESSING_PRICE,
+                "Price callback: isPriceOk=" + callback.isPriceOk());
+    }
+
+    public StateEvent updateStock(CallbackResponse callback) {
+        this.setStockCallback(callback);
+        this.setStockCompleted(true);
+        return new StateEvent(EventType.CALLBACK_RECEIVED, OrderStatus.PROCESSING_STOCK,
+                "Stock callback: isStockOk=" + callback.isStockOk());
+    }
+
     /**
      * Constructor for connector-app backward compatibility (correlationId only).
      */

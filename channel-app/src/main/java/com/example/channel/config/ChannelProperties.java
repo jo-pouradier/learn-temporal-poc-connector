@@ -11,6 +11,11 @@ public class ChannelProperties {
     private int priceValidationMax = 100000;
     private int stockValidationMax = 10000;
 
+    // Rate limiting config for stock batch endpoint (0.5 req/s by default)
+    private long stockBatchRateLimitCapacity = 1;
+    private long stockBatchRateLimitRefillTokens = 1;
+    private long stockBatchRateLimitRefillMillis = 2000; // 2 seconds = 0.5 req/s
+
     public String getConnectorCallbackUrl() {
         return connectorCallbackUrl;
     }
@@ -33,5 +38,29 @@ public class ChannelProperties {
 
     public void setStockValidationMax(int stockValidationMax) {
         this.stockValidationMax = stockValidationMax;
+    }
+
+    public long getStockBatchRateLimitCapacity() {
+        return stockBatchRateLimitCapacity;
+    }
+
+    public void setStockBatchRateLimitCapacity(long stockBatchRateLimitCapacity) {
+        this.stockBatchRateLimitCapacity = stockBatchRateLimitCapacity;
+    }
+
+    public long getStockBatchRateLimitRefillTokens() {
+        return stockBatchRateLimitRefillTokens;
+    }
+
+    public void setStockBatchRateLimitRefillTokens(long stockBatchRateLimitRefillTokens) {
+        this.stockBatchRateLimitRefillTokens = stockBatchRateLimitRefillTokens;
+    }
+
+    public long getStockBatchRateLimitRefillMillis() {
+        return stockBatchRateLimitRefillMillis;
+    }
+
+    public void setStockBatchRateLimitRefillMillis(long stockBatchRateLimitRefillMillis) {
+        this.stockBatchRateLimitRefillMillis = stockBatchRateLimitRefillMillis;
     }
 }

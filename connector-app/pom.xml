@@ -108,6 +108,19 @@
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-api</artifactId>
         </dependency>
+
+        <!-- Micrometer registry for Prometheus (metrics export via actuator) -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
+        <!-- Temporal OpenTracing for distributed tracing -->
+        <dependency>
+            <groupId>io.temporal</groupId>
+            <artifactId>temporal-opentracing</artifactId>
+            <version>1.31.0</version>
+        </dependency>
     </dependencies>
 
     <build>

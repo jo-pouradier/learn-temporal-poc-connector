@@ -1,0 +1,52 @@
+# OpenTelemetry Collector Configuration
+# Purpose: Scrape Prometheus metrics from Temporal Server and forward to SigNoz
+
+receivers:
+  # Prometheus receiver to scrape Temporal metrics
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'temporal-server'
+          scrape_interval: 15s
+          static_configs:
+            - targets: ['temporal-server:9090']
+          metrics_path: /metrics
+
+processors:
+  # Batch processor for efficient data transmission
+  batch:
+    send_batch_size: 1000
+    timeout: 10s
+
+  # Add resource attributes to identify the source
+  resource:
+    attributes:
+      - key: service.name
+        value: temporal-server
+        action: upsert
+      - key: service.namespace
+        value: temporal
+        action: upsert
+
+exporters:
+  # OTLP exporter to send metrics to SigNoz
+  otlp:
+    endpoint: signoz-standalone:4317
+    tls:
+      insecure: true
+
+  # Debug exporter for troubleshooting (optional, can be removed in production)
+  debug:
+    verbosity: basic
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+service:
+  extensions: [health_check]
+  pipelines:
+    metrics:
+      receivers: [prometheus]
+      processors: [batch, resource]
+      exporters: [otlp, debug]

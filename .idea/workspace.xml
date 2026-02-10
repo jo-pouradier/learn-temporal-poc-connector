@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ba4cc3ea-c7af-4124-84b5-2782495922dc" name="Changes" comment="feat: configurable batch size">
+    <list default="true" id="ba4cc3ea-c7af-4124-84b5-2782495922dc" name="Changes" comment="fix(monitoring): improve RL handling">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AGENTS.md" beforeDir="false" afterPath="$PROJECT_DIR$/AGENTS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,73 +89,75 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
-    &quot;Docker.docker-compose.yml.clickhouse: Compose Deployment.executor&quot;: &quot;Run&quot;,
-    &quot;Docker.docker-compose.yml.signoz: Compose Deployment.executor&quot;: &quot;Run&quot;,
-    &quot;Docker.docker-compose.yml.zookeeper: Compose Deployment.executor&quot;: &quot;Run&quot;,
-    &quot;Docker.docker-compose.yml: Compose Deployment.executor&quot;: &quot;Run&quot;,
-    &quot;HTTP Request.generated-requests | #2.executor&quot;: &quot;Run&quot;,
-    &quot;HTTP Request.generated-requests | #3.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.connect-app [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.connect-app [compile].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.connect-app [install].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.connect-app [org.apache.maven.plugins:maven-dependency-plugin:3.8.1:copy].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.connect-app [package].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.connector-app [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.connector-app [install].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.connector-app [package].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.temporal [clean,package].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.temporal [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.temporal [install].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;SHELLCHECK.PATH&quot;: &quot;/Users/joseph.pouradier-duteil/Library/Application Support/JetBrains/IntelliJIdea2025.3/plugins/Shell Script/shellcheck&quot;,
-    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
-    &quot;Spring Boot.ChannelApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.ConnectApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.TemporalApplication.executor&quot;: &quot;Run&quot;,
-    &quot;com.github.patou.gitmoji.migration-offered&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;temporal&quot;,
-    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
-    &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/joseph.pouradier-duteil/Desktop/workspace/personal/temporal-test&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_interpreter_path&quot;: &quot;node&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;terminal&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/joseph.pouradier-duteil/Desktop/workspace/personal/temporal-test/web-app/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultGoTemplateProperty": "Go File",
+    "Docker.docker-compose.yml.clickhouse: Compose Deployment.executor": "Run",
+    "Docker.docker-compose.yml.signoz: Compose Deployment.executor": "Run",
+    "Docker.docker-compose.yml.zookeeper: Compose Deployment.executor": "Run",
+    "Docker.docker-compose.yml: Compose Deployment.executor": "Run",
+    "HTTP Request.generated-requests | #2.executor": "Run",
+    "HTTP Request.generated-requests | #3.executor": "Run",
+    "Maven.connect-app [clean].executor": "Run",
+    "Maven.connect-app [compile].executor": "Run",
+    "Maven.connect-app [install].executor": "Run",
+    "Maven.connect-app [org.apache.maven.plugins:maven-dependency-plugin:3.8.1:copy].executor": "Run",
+    "Maven.connect-app [package].executor": "Run",
+    "Maven.connector-app [clean].executor": "Run",
+    "Maven.connector-app [install].executor": "Run",
+    "Maven.connector-app [package].executor": "Run",
+    "Maven.temporal [clean,package].executor": "Run",
+    "Maven.temporal [clean].executor": "Run",
+    "Maven.temporal [install].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "SHELLCHECK.PATH": "/Users/joseph.pouradier-duteil/Library/Application Support/JetBrains/IntelliJIdea2025.3/plugins/Shell Script/shellcheck",
+    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
+    "ShowUsagesActions.previewPropertyKey": "true",
+    "Spring Boot.ChannelApplication.executor": "Run",
+    "Spring Boot.ConnectApplication.executor": "Run",
+    "Spring Boot.TemporalApplication.executor": "Run",
+    "com.github.patou.gitmoji.migration-offered": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "temporal",
+    "go.sdk.automatically.set": "true",
+    "javascript.preferred.runtime.type.id": "node",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/joseph.pouradier-duteil/Desktop/workspace/personal/temporal-test",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_interpreter_path": "node",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "run.configurations.included.in.services": "true",
+    "settings.editor.selected.configurable": "terminal",
+    "to.speed.mode.migration.done": "true",
+    "ts.external.directory.path": "/Users/joseph.pouradier-duteil/Desktop/workspace/personal/temporal-test/web-app/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;postgresql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.example.temporal.temporal.utils" />
       <recent name="com.example.temporal.temporal.impl" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
@@ -163,6 +167,9 @@
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/docker" />
       <recent name="$PROJECT_DIR$/connect/core" />
+    </key>
+    <key name="MoveMembersDialog.RECENTS_KEY">
+      <recent name="com.example.temporal.temporal.utils.WorkflowIdBuilder" />
     </key>
   </component>
   <component name="RunManager" selected="Spring Boot.TemporalApplication">
@@ -311,7 +318,7 @@
       <workItem from="1769721214403" duration="5464000" />
       <workItem from="1770112467038" duration="20000" />
       <workItem from="1770485464087" duration="2750000" />
-      <workItem from="1770499949604" duration="10983000" />
+      <workItem from="1770499949604" duration="4021000" />
     </task>
     <task id="LOCAL-00001" summary="refactor connect">
       <option name="closed" value="true" />
@@ -585,15 +592,95 @@
       <option name="project" value="LOCAL" />
       <updated>1770502358026</updated>
     </task>
-    <task id="LOCAL-00035" summary="feat: configurable batch size">
+    <task id="LOCAL-00035" summary="wip">
       <option name="closed" value="true" />
-      <created>1770749010955</created>
+      <created>1770841165039</created>
       <option name="number" value="00035" />
       <option name="presentableId" value="LOCAL-00035" />
       <option name="project" value="LOCAL" />
-      <updated>1770749010955</updated>
+      <updated>1770841165039</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="simplify code&#10;&#10;clean up and refacto to simplify lecture">
+      <option name="closed" value="true" />
+      <created>1770841268554</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1770841268554</updated>
+    </task>
+    <task id="LOCAL-00037" summary="opencode: create a batch endpoint in channel">
+      <option name="closed" value="true" />
+      <created>1770844491168</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1770844491168</updated>
+    </task>
+    <task id="LOCAL-00038" summary="feat: batch api calls">
+      <option name="closed" value="true" />
+      <created>1770929918682</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1770929918682</updated>
+    </task>
+    <task id="LOCAL-00039" summary="feat: batch api calls">
+      <option name="closed" value="true" />
+      <created>1770933381070</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1770933381070</updated>
+    </task>
+    <task id="LOCAL-00040" summary="fix(channel): batch">
+      <option name="closed" value="true" />
+      <created>1770935915670</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1770935915671</updated>
+    </task>
+    <task id="LOCAL-00041" summary="feat: monitoring">
+      <option name="closed" value="true" />
+      <created>1771071123930</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1771071123930</updated>
+    </task>
+    <task id="LOCAL-00042" summary="feat(channel): add rate limit on stock update">
+      <option name="closed" value="true" />
+      <created>1771087483329</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1771087483329</updated>
+    </task>
+    <task id="LOCAL-00043" summary="feat(connector): handle rate limit in workflow">
+      <option name="closed" value="true" />
+      <created>1771087580123</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1771087580123</updated>
+    </task>
+    <task id="LOCAL-00044" summary="feat(monitoring): add monitoring on temporal">
+      <option name="closed" value="true" />
+      <created>1771087622047</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1771087622047</updated>
+    </task>
+    <task id="LOCAL-00045" summary="fix(monitoring): improve RL handling">
+      <option name="closed" value="true" />
+      <created>1771362949476</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1771362949476</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -611,14 +698,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fix: channel" />
-    <MESSAGE value="log: connector callbacks" />
-    <MESSAGE value="docs" />
-    <MESSAGE value="feat: exception handler" />
-    <MESSAGE value="refactor: simplify&#10;&#10;1. Services return data, controllers return ResponseEntity&#10;  2. Exceptions for errors - GlobalExceptionHandler catches them&#10;  3. Try-catch only in @Scheduled/@Async - exception handler doesn't help there&#10;  4. Records for simple data holders&#10;  5. Switch expressions for cleaner branching" />
-    <MESSAGE value="fix: better scripts for e2e" />
-    <MESSAGE value="todo" />
-    <MESSAGE value="refactor: use business id (orderId) instead of correlation" />
     <MESSAGE value="refactor: doc" />
     <MESSAGE value="fix: error handling" />
     <MESSAGE value="refactor(connector): use business id (orderId) instead of correlation" />
@@ -633,10 +712,18 @@
     <MESSAGE value="fix: workflow fix" />
     <MESSAGE value="fix: workflow stock" />
     <MESSAGE value="doc: schedule (todo)" />
-    <MESSAGE value="feat: configurable schedule" />
     <MESSAGE value="feat: schedule" />
-    <MESSAGE value="feat: configurable batch size" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: configurable batch size" />
+    <MESSAGE value="wip" />
+    <MESSAGE value="simplify code&#10;&#10;clean up and refacto to simplify lecture" />
+    <MESSAGE value="opencode: create a batch endpoint in channel" />
+    <MESSAGE value="feat: batch api calls" />
+    <MESSAGE value="fix(channel): batch" />
+    <MESSAGE value="feat: monitoring" />
+    <MESSAGE value="feat(channel): add rate limit on stock update" />
+    <MESSAGE value="feat(connector): handle rate limit in workflow" />
+    <MESSAGE value="feat(monitoring): add monitoring on temporal" />
+    <MESSAGE value="fix(monitoring): improve RL handling" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix(monitoring): improve RL handling" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -1,0 +1,21 @@
+# Prometheus configuration for SigNoz
+# Note: This file may not be actively used by the SigNoz standalone image
+# The OTEL collector sidecar handles Prometheus scraping instead
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+rule_files: []
+
+scrape_configs:
+  - job_name: "temporal-server"
+    static_configs:
+      - targets: ["temporal:9090"]
+    scrape_interval: 15s
+    metrics_path: /metrics

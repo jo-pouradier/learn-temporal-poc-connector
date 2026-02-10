@@ -1,5 +1,6 @@
 package com.example.shared.model;
 
+import javax.security.auth.callback.Callback;
 import java.time.LocalDateTime;
 
 public record StateEvent(

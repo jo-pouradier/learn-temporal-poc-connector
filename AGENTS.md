@@ -1,79 +1,257 @@
 # AI Agent Guidelines
 
-This file provides instructions for AI coding assistants (like Claude Code, GitHub Copilot, etc.) working with software engineers who want to learn.
+This document provides technical context for AI coding assistants working on this codebase.
 
-## Primary Role: Learning Guide, Not Code Generator
+## Project Overview
 
-AI agents should function as learning aids that help engineers grow through explanation, guidance, and feedback—not by solving problems for them.
+Multi-module Maven project implementing async webhook processing with Temporal.io orchestration.
 
-## What AI Agents SHOULD Do
+**Stack**: Java 25 + Spring Boot 3.5.9 + Temporal.io | Next.js 16 + React 19 + TypeScript 5
 
-* Explain concepts and patterns when there's confusion
-* Point to relevant documentation and best practices
-* Review code and suggest improvements
-* Help debug by asking guiding questions rather than providing fixes
-* Explain error messages and what they mean
-* Suggest approaches or architectural patterns at a high level
-* Provide small code examples (2-5 lines) to illustrate a specific concept
-* Help understand framework-specific patterns and conventions
-* Explain system design trade-offs and considerations
+| Module            | Port | Purpose                                        |
+|-------------------|------|------------------------------------------------|
+| `main-app`        | 8082 | Client-facing API entry point                  |
+| `connector-app`   | 8080 | Queue orchestrator with Temporal workflows     |
+| `channel-app`     | 8081 | Async price/stock validator (external service) |
+| `shared-model`    | N/A  | Common POJOs, exceptions, observability        |
+| `web-app`         | 3000 | Next.js React dashboard                        |
 
-## What AI Agents SHOULD NOT Do
+---
 
-* Write entire functions or complete implementations
-* Generate full solutions to learning exercises
-* Complete TODO sections without explanation
-* Refactor large portions of code without discussion
-* Provide solutions without ensuring understanding
-* Write more than a few lines of code at once
-* Convert requirements directly into working code without explanation
+## Build & Run Commands
 
-## Teaching Approach
+### Backend (Java/Maven)
 
-When someone asks for help:
+```bash
+# Build
+mvn clean compile                    # Build all modules
+mvn clean compile -pl connector-app  # Build single module
+mvn clean package                    # Package all (creates JARs)
 
-1. **Ask clarifying questions** to understand what they've tried
-2. **Reference documentation and best practices** rather than giving direct answers
-3. **Suggest next steps** instead of implementing them
-4. **Review their code** and point out specific areas for improvement
-5. **Explain the "why"** behind suggestions, not just the "how"
+# Run (development)
+cd channel-app && mvn spring-boot:run
+cd connector-app && mvn spring-boot:run
+cd main-app && mvn spring-boot:run
 
-## Code Examples
+# Run (production JAR)
+java -jar target/<module>-0.0.1-SNAPSHOT.jar
+```
 
-If providing code examples:
+### Frontend (TypeScript/npm)
 
-* Keep them minimal (typically 2-5 lines)
-* Focus on illustrating a single concept
-* Use different variable names than the actual implementation
-* Explain each line's purpose
-* Encourage adaptation and understanding, not copying
+```bash
+cd web-app
+npm install        # Install dependencies
+npm run dev        # Development server (localhost:3000)
+npm run build      # Production build
+npm run lint       # Run ESLint
+```
 
-## Example Interactions
+---
 
-**Good:**
-> Engineer: "How do I implement retry logic with exponential backoff?"
->
-> Agent: "For exponential backoff, you'll typically:
-> * Track the number of retry attempts
-> * Calculate delay using a formula like `baseDelay * (2 ^ attemptNumber)`
-> * Add optional jitter to prevent thundering herd
-> * Set a maximum number of retries
->
-> Consider using a library like `retry` or implementing a simple wrapper. What's your current approach, and what specific aspect are you unsure about?"
+## Testing Commands
 
-**Bad:**
-> Engineer: "How do I implement retry logic with exponential backoff?"
->
-> Agent: "Here's the complete implementation:
-> ```javascript
-> async function retryWithBackoff(fn, maxRetries = 5) {
->     let attempt = 0;
->     while (attempt < maxRetries) {
->         // ... (30 more lines)
->     }
-> }
-> ```"
+### Java Tests (JUnit 5)
 
-## Learning Philosophy
+```bash
+mvn test                                        # Run all tests
+mvn test -pl connector-app                      # Run tests in single module
+mvn test -Dtest=TemporalApplicationTests        # Run single test class
+mvn test -Dtest=TemporalApplicationTests#contextLoads  # Run single test method
+```
 
-Remember: The goal is to learn by doing, not by watching an AI generate solutions. When in doubt, explain more and code less.
+### Frontend Tests (Playwright E2E)
+
+```bash
+cd web-app
+npx playwright test                             # Run all E2E tests
+npx playwright test tests/example.spec.ts       # Run single test file
+npx playwright test -g "has title"              # Run test by name pattern
+npx playwright test --ui                        # Interactive UI mode
+```
+
+### Integration Tests
+
+```bash
+./test_connect_state_management.sh
+./test_new_dual_processing.sh
+```
+
+---
+
+## Code Style Guidelines
+
+### Java
+
+**Package Structure**: `com.example.<module>.<layer>`
+- Examples: `com.example.temporal.controller`, `com.example.shared.model`
+
+**Naming Conventions**:
+- Classes: `PascalCase` (e.g., `RequestService`, `WebhookController`)
+- Methods/variables: `camelCase` (e.g., `processPriceAndStock`)
+- Constants: `UPPER_SNAKE_CASE` (e.g., `private static final Logger LOG`)
+- Packages: `lowercase`
+
+**Data Classes**: Use Java `record` for immutable DTOs:
+```java
+public record PriceAndStockRequest(@NonNull String orderId, int price, int stock) {}
+```
+
+**Logger Declaration**: Use SLF4J with class-level constant:
+```java
+private static final Logger LOG = LoggerFactory.getLogger(MyClass.class);
+```
+
+**Dependency Injection**: Constructor injection (no `@Autowired` on fields):
+```java
+private final RequestService requestService;
+
+public WebhookController(RequestService requestService) {
+    this.requestService = requestService;
+}
+```
+
+**Spring Annotations**:
+- Controllers: `@RestController`, `@PostMapping`, `@GetMapping`
+- Services: `@Service`
+- Configuration: `@Configuration`, `@ConfigurationProperties`
+
+### TypeScript/React
+
+**Imports**: Group by external libraries, then internal modules:
+```typescript
+import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { MyComponent } from '@/components/MyComponent';
+```
+
+**Naming**:
+- Components/Interfaces: `PascalCase` (e.g., `OrderState`, `BurstButton`)
+- Functions/variables: `camelCase` (e.g., `fetchMainAppStatus`)
+- Files: `kebab-case.tsx` for components, `camelCase.ts` for utilities
+
+**TypeScript**:
+- Use `interface` for object shapes (not `type` aliases)
+- Enable `strict` mode (already configured)
+- Use path alias `@/*` for imports from project root
+
+**Components**: Functional components with hooks, use `'use client'` directive when needed:
+```typescript
+'use client';
+export function MyComponent({ prop }: { prop: string }) { ... }
+```
+
+---
+
+## Error Handling
+
+### Java
+
+Use the centralized `GlobalExceptionHandler` in `shared-model`:
+
+**Custom Exceptions**:
+- `ValidationException` -> 400 Bad Request
+- `NotFoundException` -> 404 Not Found
+- `ServiceUnavailableException` -> 503 Service Unavailable
+
+**Pattern**:
+```java
+if (order == null) {
+    throw new NotFoundException("Order not found: " + orderId);
+}
+```
+
+### TypeScript
+
+Graceful degradation with fallback values:
+```typescript
+try {
+    const response = await fetch(url);
+    if (!response.ok) return { content: [], totalElements: 0 };
+    return await response.json();
+} catch (error) {
+    console.error('[API] Fetch error:', error);
+    return { content: [], totalElements: 0 };
+}
+```
+
+---
+
+## Temporal.io Patterns
+
+**Workflow Interface**: Use Temporal annotations:
+```java
+@WorkflowInterface
+public interface ProcessPriceAndStockWorkflow {
+    @WorkflowMethod
+    void processPriceAndStock(PriceAndStockRequest request, String correlationId);
+    
+    @QueryMethod
+    RequestState getState();
+    
+    @SignalMethod
+    void setPriceResponse(CallbackResponse response);
+}
+```
+
+**Activity Implementations**: Separate from workflow logic, use `*ActivityImpl` suffix.
+
+**Workers**: Register workflows and activities with task queues.
+
+---
+
+## Database
+
+- **ORM**: jOOQ 3.19.15 (not JPA/Hibernate)
+- **Migrations**: Flyway (SQL files in `src/main/resources/db/migration/`)
+- **Database**: PostgreSQL 16
+- **Connection Pool**: HikariCP
+
+---
+
+## Observability
+
+**OpenTelemetry Integration**: Services instrumented with OTEL Java agent.
+
+**Custom Metrics** (in `shared-model/observability/`):
+- `process.requests.received` - Counter
+- `process.requests.completed` - Counter
+- `process.queue.size` - Gauge
+
+**Span Attributes**: `order.id`, `correlation.id`, `process.status`
+
+---
+
+## Key Architecture Concepts
+
+1. **Dual Identifiers**: `orderId` (business key) + `correlationId` (tracing UUID)
+2. **Queue-Based Processing**: Decoupled intake from processing with batch operations
+3. **Callback Pattern**: Async processing with HTTP callbacks
+4. **State Machine**: `queued -> processing_price -> processing_stock -> completed/failed`
+
+---
+
+## Infrastructure
+
+```bash
+# Start all infrastructure (Temporal + PostgreSQL + SigNoz)
+docker compose up -d
+
+# SigNoz UI: http://localhost:8085
+# Temporal UI: http://localhost:8233 (if configured)
+```
+
+---
+
+## File Locations
+
+| Type                    | Location                                           |
+|-------------------------|----------------------------------------------------|
+| Java sources            | `<module>/src/main/java/com/example/...`           |
+| Java tests              | `<module>/src/test/java/com/example/...`           |
+| DB migrations           | `<module>/src/main/resources/db/migration/`        |
+| Spring config           | `<module>/src/main/resources/application.yml`      |
+| React components        | `web-app/components/`                              |
+| React pages             | `web-app/app/`                                     |
+| TypeScript API client   | `web-app/lib/api.ts`                               |
+| E2E tests               | `web-app/tests/`                                   |

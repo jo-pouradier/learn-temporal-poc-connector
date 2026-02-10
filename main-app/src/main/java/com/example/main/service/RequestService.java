@@ -248,23 +248,26 @@ public class RequestService {
                 .map(RequestState::getOriginalRequest)
                 .toList();
                 
-            ResponseEntity<Map> response = restClient.post()
+            ResponseEntity<List> response = restClient.post()
                 .uri("/webhook/priceAndStock/batch")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(payloads)
                 .retrieve()
-                .toEntity(Map.class);
+                .toEntity(List.class);
+                
+            LOG.info("Connector response: status={}, body={}", response.getStatusCode(), response.getBody());
                 
             if (response.getStatusCode().is2xxSuccessful()) {
                  batch.forEach(state -> {
                      state.setStatus(OrderStatus.SENT_TO_CONNECTOR);
+                     state.setSubmittedAt(LocalDateTime.now());
                      stateRepository.save(state);
                      
                      StateEvent event = new StateEvent(EventType.BATCH_SENT, OrderStatus.SENT_TO_CONNECTOR, 
                              "Batch of " + batch.size() + " sent to connector");
                      eventRepository.save(state.getOrderId(), event);
                  });
-                 LOG.info("Batch sent successfully");
+                 LOG.info("Batch sent successfully: {} orders marked as SENT_TO_CONNECTOR", batch.size());
             } else {
                  handleBatchFailure(batch, "Connector rejected batch: " + response.getStatusCode());
             }

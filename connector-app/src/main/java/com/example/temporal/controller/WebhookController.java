@@ -1,12 +1,16 @@
 package com.example.temporal.controller;
 
+import com.example.shared.model.CallbackReceivedResponse;
 import com.example.shared.model.CallbackResponse;
 import com.example.shared.model.PriceAndStockRequest;
+import com.example.shared.model.PriceAndStockResponse;
 import com.example.temporal.service.RequestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class WebhookController {
@@ -19,24 +23,34 @@ public class WebhookController {
     }
 
     @PostMapping("/webhook/priceAndStock")
-    public ResponseEntity<?> handlePriceAndStock(
+    public ResponseEntity<PriceAndStockResponse> handlePriceAndStock(
             @RequestBody PriceAndStockRequest request,
             @RequestHeader(value = "X-Correlation-Id", required = false) String correlationId) {
-        return requestService.processPriceAndStock(request, correlationId);
+
+        var response = requestService.processPriceAndStock(request, correlationId);
+        return ResponseEntity.accepted()
+                .header("X-Correlation-Id", correlationId)
+                .body(response);
     }
 
     @PostMapping("/webhook/priceAndStock/batch")
-    public ResponseEntity<?> handleBatchPriceAndStock(
-            @RequestBody java.util.List<PriceAndStockRequest> requests) {
-        return ResponseEntity.accepted().body(requestService.processBatchPriceAndStock(requests));
+    public ResponseEntity<List<PriceAndStockResponse>> handleBatchPriceAndStock(
+            @RequestBody List<PriceAndStockRequest> requests) {
+        var response = requests.stream()
+                .map(request -> requestService.processPriceAndStock(request, null))
+                .toList();
+        return ResponseEntity.accepted().body(response);
     }
 
     @PostMapping("/callback/{orderId}")
     public ResponseEntity<?> handleChannelCallback(
             @PathVariable String orderId,
-            @RequestParam(required = false) String type,
+            @RequestParam String type,
             @RequestBody CallbackResponse callbackResponse) {
-        return requestService.processCallback(orderId, type, callbackResponse);
+        requestService.processCallback(orderId, type, callbackResponse);
+        return ResponseEntity.ok()
+                .header("X-Correlation-Id", callbackResponse.correlationId())
+                .body(new CallbackReceivedResponse("callback_received"));
     }
 
     @GetMapping("/status/{orderId}")

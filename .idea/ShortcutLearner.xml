@@ -3,14 +3,15 @@
   <component name="ShortcutStateService">
     <option name="shortcutCounts">
       <map>
-        <entry key="COMMENT" value="6" />
-        <entry key="COPY_HISTORY" value="7" />
-        <entry key="FIND_ACTION" value="4" />
-        <entry key="FORMAT" value="5" />
-        <entry key="FULL_SEARCH" value="5" />
-        <entry key="NAVIGATE_TO_PREVIOUS_LOCATION" value="3" />
-        <entry key="OPTIMISE_IMPORT" value="6" />
-        <entry key="RENAME" value="14" />
+        <entry key="COMMENT" value="9" />
+        <entry key="COPY_HISTORY" value="10" />
+        <entry key="EXTRACT_METHOD" value="6" />
+        <entry key="FIND_ACTION" value="9" />
+        <entry key="FORMAT" value="23" />
+        <entry key="FULL_SEARCH" value="9" />
+        <entry key="NAVIGATE_TO_PREVIOUS_LOCATION" value="17" />
+        <entry key="OPTIMISE_IMPORT" value="20" />
+        <entry key="RENAME" value="23" />
       </map>
     </option>
   </component>
